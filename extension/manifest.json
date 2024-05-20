@@ -1,0 +1,25 @@
+{
+    "name": "Hello Extensions",
+    "description": "Base Level Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+      "default_popup": "hello.html",
+      "default_icon": "hello_extensions.png"
+    },
+    "chrome_settings_overrides": {
+      "homepage": "http://localhost:8000/",
+      "startup_pages": ["http://localhost:8000/"]
+    },
+    "chrome_url_overrides" : {
+      "newtab": "redirect-newpage.html"
+    },
+    "permissions": [
+        "history",
+        "alarms",
+        "notifications"
+      ],
+    "background": {
+        "service_worker": "popup.js"
+    }
+  }
