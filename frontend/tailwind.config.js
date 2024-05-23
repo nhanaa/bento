@@ -18,6 +18,10 @@ module.exports = {
     },
     extend: {
       colors: {
+        customViolet: {
+          DEFAULT: "#7209B7",
+          500:"#9547C",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

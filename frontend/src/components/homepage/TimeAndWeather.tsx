@@ -17,7 +17,7 @@ const Weather: React.FC = () => {
 
   return (
     <div className="flex items-center gap-20 p-4">
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col text-center">
         <p className="text-gray-500">{formattedDate}</p>
         <h2 className="text-3xl font-semibold">{formattedTime}</h2>
       </div>
