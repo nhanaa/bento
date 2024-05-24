@@ -11,7 +11,7 @@ interface ButtonProps
 export const Button: React.FC<ButtonProps> = ({ children, ...props }) => {
   return (
     <button
-      className="bg-customViolet border-none text-white font-semibold hover:bg-purple-500 active:bg-purple-500"
+      className="bg-customViolet border-none text-white transition-colors font-semibold hover:bg-purple-500 active:bg-purple-500"
       {...props}
     >
       {children}
