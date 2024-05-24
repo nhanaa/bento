@@ -21,19 +21,17 @@ export const AddFolderCard = () => {
           <h4 className="truncate font-semibold">Add a folder</h4>
         </div>
       </DialogTrigger>
-      <DialogContent className="bg-white rounded-lg p-6 shadow-lg">
+      <DialogContent className="bg-white rounded-xl p-6 shadow-lg">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Add a folder</DialogTitle>
         </DialogHeader>
         <div className="flex flex-wrap gap-5">
           <div className="w-full flex flex-row items-center ">
             <EmojiSelector />
-            <span>
-              <Input
-                placeholder="Add a title..."
-                className="flex-1 border-0 focus:ring-0"
-              />
-            </span>
+            <Input
+              placeholder="Add a title..."
+              className="flex-1 border-0 focus:ring-0"
+            />
           </div>
           <div className="w-full h-40 text-start">
             <Textarea

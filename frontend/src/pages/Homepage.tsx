@@ -10,7 +10,7 @@ const Homepage: React.FC = () => {
   const [folders, setFolders] = useState<FolderCardProps[]>(mockFolders);
   return (
     <div className="h-screen w-screen">
-      <Sidebar />
+      <Sidebar folders={folders} />
       <div className="h-1/2 flex flex-col justify-center items-center gap-5 p-10">
         <h1 className="font-bold ">Hello Pax!</h1>
         <Weather />
