@@ -1,5 +1,6 @@
 import { Button } from "../homepage/Button";
 import React from "react";
+import { Chatbot } from "./Chatbot";
 
 interface HeaderProps {
   emoji: string;
@@ -13,8 +14,9 @@ export const Header: React.FC<HeaderProps> = ({ emoji, name }) => {
         <h2>{emoji}</h2>
         <h2>{name}</h2>
       </div>
-      <div>
+      <div className="flex flex-row gap-2">
         {/* chatbot  */}
+        <Chatbot />
         <Button>Share</Button>
       </div>
     </div>

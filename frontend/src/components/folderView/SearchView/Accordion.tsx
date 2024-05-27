@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { useState } from "react";
 import { AccordionItem } from "./AccordionItem";
+import { motion } from "framer-motion";
 
 interface AccordionProps {
   emoji: string;
@@ -37,17 +38,23 @@ export const Accordion: React.FC<AccordionProps> = ({
           )}
         </div>
       </div>
-      {isOpen && (
-        <div className="flex flex-wrap gap-1 p-2">
-          {content.map((item, index) => (
-            <AccordionItem
-              key={index}
-              type={item.type}
-              content={item.content}
-            />
-          ))}
-        </div>
-      )}
+      <motion.div
+        initial={false}
+        animate={{ height: isOpen ? "auto" : 0 }}
+        style={{ overflow: "hidden" }}
+      >
+        {isOpen && (
+          <div className="flex flex-wrap gap-1 p-2">
+            {content.map((item, index) => (
+              <AccordionItem
+                key={index}
+                type={item.type}
+                content={item.content}
+              />
+            ))}
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 };

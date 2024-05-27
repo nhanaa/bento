@@ -20,7 +20,8 @@ module.exports = {
       colors: {
         customViolet: {
           DEFAULT: "#7209B7",
-          500:"#9547C",
+          500:"#B884DB",
+          200:"#F1E6F8",
           100: "#FCFAFE"
         },
         customEditor:{

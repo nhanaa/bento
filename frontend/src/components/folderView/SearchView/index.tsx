@@ -1,6 +1,7 @@
 import React from "react";
 import { Accordion } from "./Accordion";
 import { Searchbar } from "./Searchbar";
+import { Separator } from "@/components/ui/separator";
 
 export const SearchView: React.FC = ({ items }) => {
   function filterContent(query: string) {
@@ -17,6 +18,16 @@ export const SearchView: React.FC = ({ items }) => {
           emoji="🗾"
           name="Screenshots"
           content={filterContent("screenshot")}
+        />
+      </div>
+      <div className="justify-center px-2">
+        <Separator className="bg-gray-200 my-5" />
+      </div>
+      <div className="flex flex-col w-full gap-1 p-2">
+        <Accordion
+          emoji="👍"
+          name="Recommended"
+          content={filterContent("link")}
         />
       </div>
     </div>

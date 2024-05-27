@@ -35,3 +35,27 @@ export const mockFolder = {
     },
   ],
 };
+
+
+export const mockMessages = [
+    {
+      user: "Bento",
+      message: "Welcome to the OPT Application Guide!\n- Make sure to have your I-20 form ready.\n- Don't forget to check the filing dates.",
+    },
+    {
+      user: "You",
+      message: "Got it! What are the required documents for the application?",
+    },
+    {
+      user: "Bento",
+      message: "You will need:\n- Your I-20 form\n- A completed Form I-765\n- Two passport-sized photos\n- Your passport\n- Any previous EAD cards",
+    },
+    {
+      user: "You",
+      message: "Thanks! How long does it usually take to process the application?",
+    },
+    {
+      user: "Bento",
+      message: "Processing time can vary, but generally it takes about 3-5 months.\n- Make sure to track your application status online.",
+    },
+  ];
