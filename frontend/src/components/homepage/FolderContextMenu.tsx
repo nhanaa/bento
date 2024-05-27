@@ -13,7 +13,7 @@ export const FolderContextMenu = () => {
       <ContextMenuTrigger>
         <EllipsisVertical className="text-gray-500 w-4" />
       </ContextMenuTrigger>
-      <ContextMenuContent className="bg-white  rounded-xl">
+      <ContextMenuContent className="bg-white text-gray-800 rounded-xl">
         <ContextMenuItem>Open in new tab</ContextMenuItem>
         <ContextMenuItem>Rename</ContextMenuItem>
         <ContextMenuSeparator className="bg-gray-200" />

@@ -4,13 +4,12 @@ import { FolderCardProps } from "@/lib/types";
 import { mockFolders } from "@/lib/mocks";
 import { FolderCard } from "@/components/homepage/FolderCard";
 import { AddFolderCard } from "@/components/homepage/AddFolderCard";
-import { Sidebar } from "@/components/homepage/Sidebar";
+import Layout from "./Layout";
 
 const Homepage: React.FC = () => {
   const [folders, setFolders] = useState<FolderCardProps[]>(mockFolders);
   return (
-    <div className="h-screen w-screen">
-      <Sidebar folders={folders} />
+    <Layout>
       <div className="h-1/2 flex flex-col justify-center items-center gap-5 p-10">
         <h1 className="font-bold ">Hello Pax!</h1>
         <Weather />
@@ -20,11 +19,17 @@ const Homepage: React.FC = () => {
           {folders.map((folder, index) => (
             <FolderCard key={index} {...folder} />
           ))}
-          <AddFolderCard />
+          <AddFolderCard
+            triggerProps={
+              "w-1/5 gap-5 flex items-center flex-wrap p-4 rounded-xl transition-colors hover:bg-gray-100 text-gray-500 border border-gray-200"
+            }
+          />
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
+
+
 
 export default Homepage;

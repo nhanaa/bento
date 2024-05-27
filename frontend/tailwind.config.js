@@ -21,7 +21,12 @@ module.exports = {
         customViolet: {
           DEFAULT: "#7209B7",
           500:"#9547C",
+          100: "#FCFAFE"
         },
+        customEditor:{
+          dark: '#020817'
+        }
+        ,
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

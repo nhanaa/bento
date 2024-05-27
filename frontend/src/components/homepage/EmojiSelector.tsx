@@ -1,6 +1,5 @@
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { useState } from "react";
-import { Input } from "../ui/input";
 
 export const EmojiSelector = () => {
   const [emoji, setEmoji] = useState("😊");
