@@ -7,7 +7,6 @@ import {
 import { FolderCardProps } from "@/lib/types";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { FolderMenuItem } from "./FolderMenuItem";
-import { Separator } from "../ui/separator";
 import { AddFolderCard } from "./AddFolderCard";
 
 interface SidebarProps {

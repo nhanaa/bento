@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
-import logo from "../../../../public/icon.svg";
+import logo from "/icon.svg";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 
 interface MessageProps {
   user: string;
@@ -10,12 +9,7 @@ interface MessageProps {
   children?: ReactNode;
 }
 
-export const Message: React.FC<MessageProps> = ({
-  user,
-  message,
-  isPending = false,
-  children,
-}) => {
+export const Message: React.FC<MessageProps> = ({ user, message }) => {
   const sender = user === "Bento" ? "Bento" : "You";
   const imageSrc = user === "Bento" ? logo : null;
   const altText = user === "Bento" ? "@Bento" : "@You";
@@ -33,7 +27,7 @@ export const Message: React.FC<MessageProps> = ({
   return (
     <div className="flex flex-row space-x-5 p-5 items-start text-xs text-gray-500">
       <Avatar>
-        <AvatarImage src={imageSrc} alt={altText} />
+        {imageSrc && <AvatarImage src={imageSrc} alt={altText} />}
         <AvatarFallback className="bg-customViolet-500 text-white">
           {fallbackText}
         </AvatarFallback>
