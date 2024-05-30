@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from "react";
 import { FolderCardProps } from "@/lib/types";
 import { mockFolders } from "@/lib/mocks";
-import { Sidebar } from "@/components/homepage/Sidebar";
+import { Sidebar } from "@/components/Sidebar/index";
 
 interface LayoutProps {
   children: ReactNode;

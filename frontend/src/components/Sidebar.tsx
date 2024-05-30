@@ -3,11 +3,11 @@ import {
   Sheet,
   SheetTrigger,
   SheetContent,
-} from "../ui/sheet";
+} from "./ui/sheet";
 import { FolderCardProps } from "@/lib/types";
-import { Avatar, AvatarFallback } from "../ui/avatar";
-import { FolderMenuItem } from "./FolderMenuItem";
-import { AddFolderCard } from "./AddFolderCard";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { FolderMenuItem } from "./homepage/FolderMenuItem";
+import { AddFolderCard } from "./homepage/AddFolderCard";
 
 interface SidebarProps {
   folders: FolderCardProps[];

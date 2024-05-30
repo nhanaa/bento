@@ -1,4 +1,4 @@
-import { Button } from "../homepage/Button";
+import { Button } from "../Button";
 import React from "react";
 import { Chatbot } from "./Chatbot";
 
@@ -15,7 +15,6 @@ export const Header: React.FC<HeaderProps> = ({ emoji, name }) => {
         <h2>{name}</h2>
       </div>
       <div className="flex flex-row gap-2">
-        {/* chatbot  */}
         <Chatbot />
         <Button>Share</Button>
       </div>

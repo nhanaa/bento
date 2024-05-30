@@ -9,7 +9,7 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Button } from "./Button";
+import { Button } from "../Button";
 import { EmojiSelector } from "./EmojiSelector";
 interface AddFolderCardProps {
   triggerProps?: string;

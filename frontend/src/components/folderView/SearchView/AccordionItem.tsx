@@ -35,13 +35,8 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   }
 };
 
-interface LinkItemProps {
-  name: string;
-  favicon?: string;
-  summary?: string;
-}
 
-const LinkItem: React.FC<LinkItemProps> = ({ name, favicon, summary }) => {
+const LinkItem: React.FC<LinkContent> = ({ name, favicon }) => {
   return (
     <div className="w-full hover:bg-customViolet-200 transition-colors text-sm font-medium text-gray-500 items-center flex flex-row p-3 border border-gray-200 bg-customViolet-100 gap-2 rounded-xl truncate">
       {favicon && <img className="w-4 h-4" src={favicon} />}
@@ -50,18 +45,10 @@ const LinkItem: React.FC<LinkItemProps> = ({ name, favicon, summary }) => {
   );
 };
 
-interface FileItemProps {
-  name: string;
-  icon?: React.ReactNode;
-  summary?: string;
-  previewImg?: string;
-}
 
-const FileItem: React.FC<FileItemProps> = ({
+const FileItem: React.FC<FileContent> = ({
   name,
   icon,
-  summary,
-  previewImg,
 }) => {
   return (
     <div className="w-1/4 aspect-square hover:bg-customViolet-200 transition-colors text-sm font-medium justify-center text-center text-gray-500 items-center flex flex-col p-3 border border-gray-200 bg-customViolet-100 gap-2 rounded-xl">
