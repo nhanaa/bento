@@ -17,7 +17,7 @@ export const Chatbot = () => {
           💬 Chat
         </button>
       </DialogTrigger>
-      <DialogContent className="aspect-video h-screen bg-customViolet-100 border border-customViolet rounded-xl p-6">
+      <DialogContent className="aspect-video h-full bg-customViolet-100 border border-customViolet rounded-xl p-6">
         <div className="flex flex-col gap-5 overflow-scroll">
           {mockMessages.map((msg, index) => (
             <>

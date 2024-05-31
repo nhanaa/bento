@@ -31,11 +31,14 @@ export const Accordion: React.FC<AccordionProps> = ({
             <span>{emoji}</span>
             <span>{name}</span>
           </div>
-          {isOpen ? (
-            <ChevronUp className="w-4 h-4" />
-          ) : (
-            <ChevronDown className="w-4 h-4" />
-          )}
+          <div className="items-center flex flex-row gap-2 ">
+            <span className="text-xs text-gray-500">{content.length}</span>
+            {isOpen ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </div>
         </div>
       </div>
       <motion.div

@@ -3,7 +3,7 @@ import logo from "/icon.svg";
 import { AuthButtons } from "@/components/auth/AuthButtons";
 
 export const Auth: React.FC = () => {
-  const [pageView, setPageView] = useState("signup"); 
+  const [pageView, setPageView] = useState("signup");
 
   const togglePageView = () => {
     setPageView((prevView) => (prevView === "signup" ? "login" : "signup"));
@@ -21,7 +21,7 @@ export const Auth: React.FC = () => {
         <p className="font-medium text-gray-500">
           Have an account?{" "}
           <span
-            className="text-customViolet-500 hover:underline cursor-pointer"
+            className="text-customViolet hover:underline cursor-pointer"
             onClick={togglePageView}
           >
             Log in
@@ -31,7 +31,7 @@ export const Auth: React.FC = () => {
         <p className="font-medium text-gray-500">
           Don't have an account?{" "}
           <span
-            className="text-customViolet-500 hover:underline cursor-pointer"
+            className="text-customViolet hover:underline cursor-pointer"
             onClick={togglePageView}
           >
             Sign up

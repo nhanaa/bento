@@ -1,10 +1,13 @@
 import "@blocknote/core/fonts/inter.css";
-import { useCreateBlockNote } from "@blocknote/react";
+import {
+  useCreateBlockNote,
+} from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { schema } from "./schema";
 import { Rewrite } from "./Rewrite";
 import { useRef, useEffect, useState } from "react";
+
 
 export function Editable() {
   const editor = useCreateBlockNote({
@@ -24,10 +27,7 @@ export function Editable() {
       ref={containerRef}
       className="relative w-full h-full bg-white border border-gray-200 dark:bg-customEditor-dark rounded-xl py-1"
     >
-      <BlockNoteView
-        editor={editor}
-        style={{ width: "100%", height: "100%" }}
-      />
+      <BlockNoteView editor={editor} />
       <div className="absolute right-4 bottom-4">
         <Rewrite containerWidth={containerWidth} />
       </div>
