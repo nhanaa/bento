@@ -4,7 +4,6 @@ from typing import List, Union, Any
 
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -17,6 +16,9 @@ from langchain_community.vectorstores.azure_cosmos_db import AzureCosmosDBVector
 from langchain_openai import AzureChatOpenAI
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
+from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
+
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -69,7 +71,6 @@ def get_links(query: str) -> List[HttpUrl]:
     """
     This assumes that the browsing history is stored in the Azure Cosmos DB
     and its title and URL are combined, embedded, and stored as vectors.
-    This also assumes that the vector is indexed and is ready to be searched.
     For example:
     title = "Hello world"
     url = "https://example.com"
@@ -78,6 +79,7 @@ def get_links(query: str) -> List[HttpUrl]:
     try:
         COLLECTION_NAME = "browsing_history"
         collection = db[COLLECTION_NAME]
+
         # Initialize the vector store
         vectorstore = AzureCosmosDBVectorSearch(
             collection,
@@ -85,10 +87,6 @@ def get_links(query: str) -> List[HttpUrl]:
             index_name="website_vector_index",
             embedding_key="website_vector_field",
         )
-
-        # Ensure the index is created if not already
-        if not vectorstore.is_indexed():
-            vectorstore.create_index(num_lists=1, dimensions=768)
 
         # Encode the query using the embedding model
         query_vector = huggingface_embeddings.embed_query(query)
@@ -110,12 +108,32 @@ async def create_folder(links_list: List[HttpUrl], user_id: str, folder_id: str)
     try:
         COLLECTION_NAME = "documents"
         collection = db[COLLECTION_NAME]
+        embedding_key = "vectorContent"
 
         # Initialize the vector store
         vectorstore = CustomAzureCosmosDBVectorSearch(
             collection,
             huggingface_embeddings,
+            embedding_key=embedding_key,
         )
+
+        # ensure indices
+        index_definitions = [
+            # add index for user_id (metadata)
+            {"key": {"user_id": 1}, "name": "user_filter"},
+            # add index for vector content (for vector search)
+            {
+                "name": "TitleVectorSearchIndex",
+                "key": {embedding_key: "cosmosSearch"},
+                "cosmosSearchOptions": {
+                    "kind": "vector-ivf",
+                    "numLists": 1,
+                    "similarity": "COS",
+                    "dimensions": 768,
+                },
+            },
+        ]
+        ensure_index(collection, index_definitions, COLLECTION_NAME)
 
         # Load documents from the web links
         loader = WebBaseLoader(
@@ -123,7 +141,7 @@ async def create_folder(links_list: List[HttpUrl], user_id: str, folder_id: str)
             verify_ssl=False,
             bs_get_text_kwargs={"strip": True, "separator": " "},
         )
-        document_list = await loader.aload()  # Assuming async operation
+        document_list = await loader.aload()
         text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=0)
         docs = text_splitter.split_documents(document_list)
 
@@ -132,8 +150,29 @@ async def create_folder(links_list: List[HttpUrl], user_id: str, folder_id: str)
             doc.metadata.update({"user_id": user_id, "folder_id": folder_id})
 
         # Add the documents to the vector store
-        await vectorstore.add_documents(docs)  # Assuming async operation
+        await vectorstore.add_documents(docs)
 
         return "Folder created successfully."
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def ensure_index(collection, index_definitions, collection_name: str):
+    """
+    Ensures that the specified indexes exist on the collection.
+    If they don't exist, it creates the indexes.
+    """
+    # Check existing indexes
+    existing_indexes = collection.list_indexes()
+    existing_index_names = [index["name"] for index in existing_indexes]
+
+    for index_def in index_definitions:
+        index_name = index_def["name"]
+        if index_name not in existing_index_names:
+            try:
+                db.command({"createIndexes": collection_name, "indexes": [index_def]})
+                print(f"Index '{index_name}' created successfully.")
+            except DuplicateKeyError as e:
+                print(f"Error creating index '{index_name}': {e}")
+        else:
+            print(f"Index '{index_name}' already exists.")
