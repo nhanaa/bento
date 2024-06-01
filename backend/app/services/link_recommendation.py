@@ -1,6 +1,6 @@
 from uuid import UUID
 from datetime import datetime
-from typing import List, Union
+from typing import List, Union, Any
 
 import os
 from dotenv import load_dotenv
@@ -11,14 +11,12 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, HttpUrl
 from typing_extensions import Annotated
-
-from langchain_community.vectorstores.azure_cosmos_db import (
-    AzureCosmosDBVectorSearch,
-    CosmosDBSimilarityType,
-    CosmosDBVectorSearchType,
-)
+from langchain_community.document_loaders import WebBaseLoader
+from custom_vectorstore import CustomAzureCosmosDBVectorSearch
+from langchain_community.vectorstores.azure_cosmos_db import AzureCosmosDBVectorSearch
 from langchain_openai import AzureChatOpenAI
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_text_splitters import CharacterTextSplitter
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -28,13 +26,11 @@ app = FastAPI()
 
 # Set up connection details
 CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
-NAMESPACE = "bento.browsing_history"
-DB_NAME, COLLECTION_NAME = NAMESPACE.split(".")
+DB_NAME = "bento"
 
 # Initialize MongoDB client
 mongo_client = MongoClient(CONNECTION_STRING)
 db = mongo_client[DB_NAME]
-collection = db[COLLECTION_NAME]
 
 # Initialize the embedding model
 model_name = "sentence-transformers/all-mpnet-base-v2"
@@ -43,18 +39,6 @@ encode_kwargs = {"normalize_embeddings": False}
 huggingface_embeddings = HuggingFaceEmbeddings(
     model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
 )
-
-# Initialize the vector store
-vectorstore = AzureCosmosDBVectorSearch(
-    collection,
-    huggingface_embeddings,
-    index_name="website_vector_index",
-    embedding_key="website_vector_field",
-)
-
-# Ensure the index is created if not already
-if not vectorstore.is_indexed():
-    vectorstore.create_index(num_lists=1, dimensions=768)
 
 
 # Exception handling for HTTP exceptions
@@ -79,14 +63,9 @@ class VisitData(BaseModel):
     visitCount: int
 
 
-class LinkRecommendation(BaseModel):
-    title: str
-    url: HttpUrl
-
-
 # Define the API endpoint for getting link recommendations
 @app.get("/get_links/{user_id}")
-def get_links(query: str) -> List[LinkRecommendation]:
+def get_links(query: str) -> List[HttpUrl]:
     """
     This assumes that the browsing history is stored in the Azure Cosmos DB
     and its title and URL are combined, embedded, and stored as vectors.
@@ -97,8 +76,22 @@ def get_links(query: str) -> List[LinkRecommendation]:
     combined_title_url = title + " " + url -> "Hello world https://example.com"
     """
     try:
+        COLLECTION_NAME = "browsing_history"
+        collection = db[COLLECTION_NAME]
+        # Initialize the vector store
+        vectorstore = AzureCosmosDBVectorSearch(
+            collection,
+            huggingface_embeddings,
+            index_name="website_vector_index",
+            embedding_key="website_vector_field",
+        )
+
+        # Ensure the index is created if not already
+        if not vectorstore.is_indexed():
+            vectorstore.create_index(num_lists=1, dimensions=768)
+
         # Encode the query using the embedding model
-        query_vector = huggingface_embeddings.encode(query)
+        query_vector = huggingface_embeddings.embed_query(query)
 
         # Perform similarity search
         similar_vectors: List[VisitData] = vectorstore.similarity_search(
@@ -106,10 +99,41 @@ def get_links(query: str) -> List[LinkRecommendation]:
         )
 
         # Return the search results
-        return [
-            LinkRecommendation(title=vector.title, url=vector.url)
-            for vector in similar_vectors
-        ]
+        return [vector.url for vector in similar_vectors]
     except Exception as e:
         # Handle potential errors
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/create_folder/{user_id}/{folder_id}", status_code=201)
+async def create_folder(links_list: List[HttpUrl], user_id: str, folder_id: str) -> str:
+    try:
+        COLLECTION_NAME = "documents"
+        collection = db[COLLECTION_NAME]
+
+        # Initialize the vector store
+        vectorstore = CustomAzureCosmosDBVectorSearch(
+            collection,
+            huggingface_embeddings,
+        )
+
+        # Load documents from the web links
+        loader = WebBaseLoader(
+            web_paths=links_list.links,
+            verify_ssl=False,
+            bs_get_text_kwargs={"strip": True, "separator": " "},
+        )
+        document_list = await loader.aload()  # Assuming async operation
+        text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=0)
+        docs = text_splitter.split_documents(document_list)
+
+        # Add metadata to the documents
+        for doc in docs:
+            doc.metadata.update({"user_id": user_id, "folder_id": folder_id})
+
+        # Add the documents to the vector store
+        await vectorstore.add_documents(docs)  # Assuming async operation
+
+        return "Folder created successfully."
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
