@@ -18,7 +18,8 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from motor.motor_asyncio import AsyncIOMotorClient
+
+# from motor.motor_asyncio import AsyncIOMotorClient
 
 
 # Load environment variables from a .env file
@@ -32,8 +33,8 @@ CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
 DB_NAME = "bento"
 
 # Initialize MongoDB client
-mongo_client = AsyncIOMotorClient(CONNECTION_STRING)
-db = mongo_client.bento
+mongo_client = MongoClient(CONNECTION_STRING)
+db = mongo_client[DB_NAME]
 
 # Initialize the embedding model
 model_name = "sentence-transformers/all-mpnet-base-v2"
@@ -62,13 +63,17 @@ class VisitData(BaseModel):
     lastVisitTime: datetime
     title: str
     typedCount: int
-    url: HttpUrl
+    url: HttpUrl  # this is used to eliminate possible replication of 2 urls leading to the same page
     visitCount: int
+
+
+class LinkRecInput(BaseModel):
+    query: str
 
 
 # Define the API endpoint for getting link recommendations
 @app.get("/get_links/{user_id}")
-def get_links(query: str) -> List[HttpUrl]:
+def get_links(user_id: str, req_body: LinkRecInput = Body(...)) -> List[str]:
     """
     This assumes that the browsing history is stored in the Azure Cosmos DB
     and its title and URL are combined, embedded, and stored as vectors.
@@ -83,24 +88,24 @@ def get_links(query: str) -> List[HttpUrl]:
 
         # Initialize the vector store
         vectorstore = AzureCosmosDBVectorSearch(
-            collection,
-            huggingface_embeddings,
+            collection=collection,
+            embedding=huggingface_embeddings,
             index_name="website_vector_index",
             embedding_key="website_vector_field",
+            # look for the url to return as page content, the rest will be considered metadata
+            text_key="url",
         )
-        if not vectorstore.is_indexed():
-            vectorstore.create_index()
-
-        # Encode the query using the embedding model
-        query_vector = huggingface_embeddings.embed_query(query)
+        if not vectorstore.index_exists():
+            vectorstore.create_index(dimensions=768)
 
         # Perform similarity search
-        similar_vectors: List[VisitData] = vectorstore.similarity_search(
-            query_vector, k=10, score_threshold=0.5
+        similar_documents = vectorstore.similarity_search(
+            req_body.query, score_threshold=0.35, k=10
         )
 
         # Return the search results
-        return [vector.url for vector in similar_vectors]
+        return [doc.page_content for doc in similar_documents]
+
     except Exception as e:
         # Handle potential errors
         raise HTTPException(status_code=500, detail=str(e))
@@ -184,7 +189,7 @@ def ensure_index(collection, index_definitions, collection_name: str):
 
 
 @app.post("/insert_browsing_history", status_code=201)
-async def insert_browsing_history(data: List[VisitData] = Body(...)) -> None:
+def insert_browsing_history(data: List[VisitData] = Body(...)) -> None:
     """
     Inserts the browsing history data into the Azure Cosmos DB.
     """
@@ -196,8 +201,8 @@ async def insert_browsing_history(data: List[VisitData] = Body(...)) -> None:
         for item in data:
             my_dict = item.model_dump()
             my_str = my_dict["title"] + " " + my_dict["url"].host
-            my_dict["url"] = str(my_dict["url"])
+            my_dict["url"] = str(my_dict["url"].host + my_dict["url"].path)
             my_dict["website_vector_field"] = huggingface_embeddings.embed_query(my_str)
-            await collection.insert_one(my_dict)
+            collection.insert_one(my_dict)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
