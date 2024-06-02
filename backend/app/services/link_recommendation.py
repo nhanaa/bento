@@ -8,7 +8,6 @@ from fastapi.responses import PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, HttpUrl, field_serializer
-from pydantic_core import Url
 from typing_extensions import Annotated
 from langchain_community.document_loaders import WebBaseLoader
 from custom_vectorstore import CustomAzureCosmosDBVectorSearch
@@ -129,8 +128,9 @@ def create_chunks(
 
         # ensure indices
         index_definitions = [
-            # add index for user_id (metadata)
+            # add index for user_id and folder_id (metadata)
             {"key": {"user_id": 1}, "name": "user_filter"},
+            {"key": {"folder_id": 1}, "name": "folder_filter"},
             # add index for vector content (for vector search)
             {
                 "name": "TitleVectorSearchIndex",
