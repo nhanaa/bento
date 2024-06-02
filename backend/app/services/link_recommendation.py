@@ -111,8 +111,8 @@ def get_links(user_id: str, req_body: LinkRecInput = Body(...)) -> List[str]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/create_folder/{user_id}/{folder_id}", status_code=201)
-async def create_folder(
+@app.post("/create_chunks/{user_id}/{folder_id}", status_code=201)
+def create_chunks(
     user_id: str, folder_id: str, links_list: List[HttpUrl] = Body(...)
 ) -> str:
     try:
@@ -147,11 +147,11 @@ async def create_folder(
 
         # Load documents from the web links
         loader = WebBaseLoader(
-            web_paths=links_list.links,
+            web_paths=[str(link) for link in links_list],
             verify_ssl=False,
             bs_get_text_kwargs={"strip": True, "separator": " "},
         )
-        document_list = await loader.aload()
+        document_list = loader.load()
         text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=0)
         docs = text_splitter.split_documents(document_list)
 
@@ -160,7 +160,7 @@ async def create_folder(
             doc.metadata.update({"user_id": user_id, "folder_id": folder_id})
 
         # Add the documents to the vector store
-        await vectorstore.add_documents(docs)
+        vectorstore.add_documents(docs)
 
         return "Folder created successfully."
     except Exception as e:
@@ -200,8 +200,9 @@ def insert_browsing_history(data: List[VisitData] = Body(...)) -> None:
         # Insert the data into the collection
         for item in data:
             my_dict = item.model_dump()
-            my_str = my_dict["title"] + " " + my_dict["url"].host
-            my_dict["url"] = str(my_dict["url"].host + my_dict["url"].path)
+            url_in_str = str(my_dict["url"])
+            my_str = my_dict["title"] + " " + url_in_str
+            my_dict["url"] = url_in_str
             my_dict["website_vector_field"] = huggingface_embeddings.embed_query(my_str)
             collection.insert_one(my_dict)
     except Exception as e:
