@@ -1,14 +1,14 @@
-from uuid import UUID
 from datetime import datetime
 from typing import List, Union, Any
 
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.responses import PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, field_serializer
+from pydantic_core import Url
 from typing_extensions import Annotated
 from langchain_community.document_loaders import WebBaseLoader
 from custom_vectorstore import CustomAzureCosmosDBVectorSearch
@@ -18,6 +18,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 # Load environment variables from a .env file
@@ -31,8 +32,8 @@ CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
 DB_NAME = "bento"
 
 # Initialize MongoDB client
-mongo_client = MongoClient(CONNECTION_STRING)
-db = mongo_client[DB_NAME]
+mongo_client = AsyncIOMotorClient(CONNECTION_STRING)
+db = mongo_client.bento
 
 # Initialize the embedding model
 model_name = "sentence-transformers/all-mpnet-base-v2"
@@ -57,8 +58,8 @@ async def validation_exception_handler(request, exc):
 
 # Define the data models
 class VisitData(BaseModel):
-    id: UUID
-    lastVisitTime: float
+    id: int
+    lastVisitTime: datetime
     title: str
     typedCount: int
     url: HttpUrl
@@ -87,6 +88,8 @@ def get_links(query: str) -> List[HttpUrl]:
             index_name="website_vector_index",
             embedding_key="website_vector_field",
         )
+        if not vectorstore.is_indexed():
+            vectorstore.create_index()
 
         # Encode the query using the embedding model
         query_vector = huggingface_embeddings.embed_query(query)
@@ -104,7 +107,9 @@ def get_links(query: str) -> List[HttpUrl]:
 
 
 @app.post("/create_folder/{user_id}/{folder_id}", status_code=201)
-async def create_folder(links_list: List[HttpUrl], user_id: str, folder_id: str) -> str:
+async def create_folder(
+    user_id: str, folder_id: str, links_list: List[HttpUrl] = Body(...)
+) -> str:
     try:
         COLLECTION_NAME = "documents"
         collection = db[COLLECTION_NAME]
@@ -176,3 +181,23 @@ def ensure_index(collection, index_definitions, collection_name: str):
                 print(f"Error creating index '{index_name}': {e}")
         else:
             print(f"Index '{index_name}' already exists.")
+
+
+@app.post("/insert_browsing_history", status_code=201)
+async def insert_browsing_history(data: List[VisitData] = Body(...)) -> None:
+    """
+    Inserts the browsing history data into the Azure Cosmos DB.
+    """
+    try:
+        COLLECTION_NAME = "browsing_history"
+        collection = db.get_collection(COLLECTION_NAME)
+
+        # Insert the data into the collection
+        for item in data:
+            my_dict = item.model_dump()
+            my_str = my_dict["title"] + " " + my_dict["url"].host
+            my_dict["url"] = str(my_dict["url"])
+            my_dict["website_vector_field"] = huggingface_embeddings.embed_query(my_str)
+            await collection.insert_one(my_dict)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
