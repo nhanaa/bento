@@ -67,7 +67,8 @@ class OAuthService:
             service = build('oauth2', 'v2', credentials=credentials)
             user_info = service.userinfo().get().execute()
             token = OAuthService.create_token(user_info)
-            return jsonify(token=token)
+            react_app_url = f"http://localhost:5173/auth?token={token}"
+            return redirect(react_app_url)
         except Exception as e:
             print(f"Error during Google callback: {e}")  # Debugging line
             return str(e), 500

@@ -38,9 +38,17 @@ export const AuthButton: React.FC<AuthButtonProps> = ({ brand, imgUrl }) => {
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    const code = queryParams.get("code");
-    if (code) {
-      mutation.mutate(code);
+    const token = queryParams.get("token");
+
+    if (token) {
+      console.log(`Token received: ${token}`);
+      localStorage.setItem("token", token);
+      navigate("/home");
+    } else {
+      const code = queryParams.get("code");
+      if (code) {
+        mutation.mutate(code);
+      }
     }
   }, [location.search]);
 
