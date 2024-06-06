@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from services.oauth import OAuthService
 
 oauth_bp = Blueprint('oauth_bp', __name__)
@@ -13,14 +13,11 @@ def default():
 def google_login():
     return oauth_service.google_login()
 
-@oauth_bp.route('/google/callback', methods=['GET'])
+@oauth_bp.route('/google/callback', methods=['GET', 'POST'])  # Allow both GET and POST
 def google_callback():
+    if request.method == 'POST':
+        code = request.json.get('code')
+        if code:
+            return oauth_service.google_callback()
     return oauth_service.google_callback()
 
-@oauth_bp.route('/github/login', methods=['GET'])
-def github_login():
-    return oauth_service.github_login()
-
-@oauth_bp.route('/github/callback', methods=['GET'])
-def github_callback():
-    return oauth_service.github_callback()
