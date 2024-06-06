@@ -1,7 +1,7 @@
-import React from 'react';
-import logo from '../../public/icon.svg';
-import { AuthButton } from '@/components/signin/AuthButton';
-import { Link } from 'react-router-dom';
+import React from "react";
+import logo from "../../public/icon.svg";
+import { AuthButton } from "@/components/signin/AuthButton";
+import { Link } from "react-router-dom";
 
 function SignIn() {
   return (
@@ -20,8 +20,11 @@ function SignIn() {
           imgUrl="https://cdn-icons-png.flaticon.com/512/25/25231.png"
         />
       </div>
-      <p className="w-full text-center">Don't have an account? {' '}
-        <Link to='/dashboard'>Sign up</Link>
+      <p className="w-full text-center">
+        Don't have an account?{" "}
+        <Link to="/dashboard" className="hover:underline">
+          Sign up
+        </Link>
       </p>
     </div>
   );
