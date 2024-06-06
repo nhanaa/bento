@@ -2,3 +2,7 @@ flask
 azure-core
 azure-cosmos
 python-dotenv
+google-auth-oauthlib 
+google-auth-httplib2 
+google-api-python-client
+requests_oauthlib
