@@ -3,6 +3,8 @@ from langchain_openai import AzureChatOpenAI
 import os
 from dotenv import load_dotenv
 from typing import List
+import time
+
 
 load_dotenv()
 from langchain.document_loaders import PyPDFLoader
@@ -15,6 +17,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel
 from langchain_core.documents import Document
 import json
+
+start_time = time.time()  # Capture the start time
 
 print("************************************")
 print("Loading the language model...")
@@ -37,7 +41,7 @@ huggingface_embeddings = HuggingFaceEmbeddings(
 print("************************************")
 print("Loading PDF...")
 print("************************************")
-url = "https://arxiv.org/pdf/2404.16821v2"
+url = "https://arxiv.org/pdf/2402.07939"
 loader = PyPDFLoader(url)
 pages = loader.load()
 print(f"Loaded {len(pages)} pages from the PDF.")
@@ -90,15 +94,27 @@ FULL SUMMARY:
 """
 map_prompt_template = PromptTemplate(template=map_prompt, input_variables=["text"])
 
-summary_list = []
+
 print("************************************")
 print("Generating summaries for selected document chunks...")
 print("************************************")
-for idx, val in enumerate(selected_indices):
-    print(f"Processing cluster {idx} using {val}th chunk...")
-    single_chain = map_prompt_template | llm | StrOutputParser()
-    res = single_chain.invoke({"text": docs[val].page_content})
-    summary_list.append(res)
+# summary_list = []
+# for idx, val in enumerate(selected_indices):
+#     print(f"Processing cluster {idx} using {val}th chunk...")
+#     single_chain = map_prompt_template | llm | StrOutputParser()
+#     res = single_chain.invoke({"text": docs[val].page_content})
+#     summary_list.append(res)
+
+chain = (
+    {"text": lambda idx: docs[idx].page_content}
+    | map_prompt_template
+    | llm
+    | StrOutputParser()
+)
+
+# Create a RunnableConfig with your callbacks
+
+summary_list = chain.batch(selected_indices, config={"max_concurrency": 5})
 
 summaries = "\n".join(summary_list)
 print("Summaries generated for all selected chunks.")
@@ -141,3 +157,6 @@ print("************************************")
 print("Verbose summary generated.")
 print("************************************")
 print(output)
+
+elapsed_time = time.time() - start_time  # Calculate elapsed time
+print(f"The code took {elapsed_time} seconds to execute.")
