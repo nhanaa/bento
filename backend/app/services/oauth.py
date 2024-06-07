@@ -72,3 +72,8 @@ class OAuthService:
         except Exception as e:
             print(f"Error during Google callback: {e}")  # Debugging line
             return str(e), 500
+
+    @staticmethod
+    def logout():
+        session.clear() 
+        return jsonify({"message": "Logged out successfully"}), 200

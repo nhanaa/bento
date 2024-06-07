@@ -21,3 +21,7 @@ def google_callback():
             return oauth_service.google_callback()
     return oauth_service.google_callback()
 
+@oauth_bp.route('/logout', methods=['GET', 'POST'])
+def logout():
+    return oauth_service.logout()
+
