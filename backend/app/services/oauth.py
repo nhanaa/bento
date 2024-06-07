@@ -7,6 +7,7 @@ from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from requests_oauthlib import OAuth2Session
 from dotenv import load_dotenv
+from services.user import UserService
 
 load_dotenv()
 
@@ -66,6 +67,9 @@ class OAuthService:
             credentials = OAuthService.google_flow.credentials
             service = build('oauth2', 'v2', credentials=credentials)
             user_info = service.userinfo().get().execute()
+            user = UserService.get_user_by_email(user_info['email'])
+            if not user:
+                user, _ = UserService.create_user(user_info["email"],user_info['name'])
             token = OAuthService.create_token(user_info)
             react_app_url = f"http://localhost:5173/auth?token={token}"
             return redirect(react_app_url)
