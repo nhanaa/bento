@@ -9,7 +9,7 @@ folder_service = FolderService()
 def add_folder():
     data = request.json
     folder = folder_service.create_folder(data['name'], data['summary'])
-    return jsonify(folder.to_dict()), 201
+    return jsonify(folder), 201
 
 @folder_bp.route('/all', methods=['GET'])
 def get_folders():

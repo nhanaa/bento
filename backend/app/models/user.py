@@ -14,7 +14,10 @@ class User:
         return {
             'id': self.id,
             'email': self.email,
-            'name': self.name
+            'name': self.name,
+            'is_deactivated': self.is_deactivated,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
         }
 
     # Create User object from dict

@@ -8,10 +8,11 @@ class CosmosDB:
 
     @classmethod
     def init_app(cls, app):
-        print(app.config['COSMOS_DB_URI'])
         cls.client = CosmosClient(app.config['COSMOS_DB_URI'], credential=app.config['COSMOS_DB_KEY'])
         cls.database = cls.client.create_database_if_not_exists(id=app.config['COSMOS_DB_DATABASE_NAME'])
         cls.create_containers()
+
+        return (cls, app)
 
     @classmethod
     def create_containers(cls):

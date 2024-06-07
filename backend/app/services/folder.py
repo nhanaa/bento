@@ -10,7 +10,7 @@ class FolderService:
     def create_folder(self, name, summary):
         folder = Folder(name, summary)
         folder.id = str(uuid.uuid4())
-        self.container.create_item(body=folder.to_dict())
+        self.container.create_item(body=folder)
         return folder
 
     def get_folders(self):
