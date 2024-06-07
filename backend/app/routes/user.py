@@ -33,8 +33,10 @@ def create_user():
     if not email or not name:
         return jsonify({"error": "Email and name are required"}), 400
     
-    user = user_service.create_user(email, name)
-    return jsonify(user.to_dict()), 201
+    user, exist = user_service.create_user(email, name)
+    if exist:
+        return jsonify(user), 409
+    return jsonify(user), 201
 
 @user_bp.route('/<user_id>', methods=['PUT'])
 def update_user_by_id(user_id):

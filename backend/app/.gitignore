@@ -4,3 +4,4 @@
 
 services/.env
 services/google_secret_key.json
+note.txt

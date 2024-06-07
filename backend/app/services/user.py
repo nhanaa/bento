@@ -9,12 +9,12 @@ class UserService:
     def create_user(self, email, name):
         user = self.get_user_by_email(email)
         if user:
-            return user
+            return {"message": "User already exists"}, True
         
         user = User(email, name)
         user.id = str(uuid.uuid4())
         self.container.create_item(body=user.to_dict())
-        return user.to_dict()
+        return user.to_dict(), False
     
     def get_user(self, query):
         items = list(self.container.query_items(query=query, enable_cross_partition_query=True))
