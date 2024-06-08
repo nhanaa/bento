@@ -7,14 +7,14 @@ class CosmosDB:
     containers = {}
 
     @classmethod
-    def init_app(cls, app):
-        print(app.config['COSMOS_DB_URI'])
-        cls.client = CosmosClient(app.config['COSMOS_DB_URI'], credential=app.config['COSMOS_DB_KEY'])
-        cls.database = cls.client.create_database_if_not_exists(id=app.config['COSMOS_DB_DATABASE_NAME'])
+    def init_app(cls, config):
+        print(config.COSMOS_DB_URI)
+        cls.client = CosmosClient(config.COSMOS_DB_URI, credential=config.COSMOS_DB_KEY)
+        cls.database = cls.client.create_database_if_not_exists(id=config.COSMOS_DB_DATABASE_NAME)
         cls.create_containers()
 
     @classmethod
-    def create_containers(cls):
+    def create_collection(cls):
         cls.containers['Users'] = cls.database.create_container_if_not_exists(
             id='Users',
             partition_key=PartitionKey(path='/id')
