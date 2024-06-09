@@ -1,0 +1,4 @@
+problem: scrap urls -> repeated url?
+get used to flask for first time
+users have many imgs, web urls -> scrap all? -> trade off between x urls and y convenience
+

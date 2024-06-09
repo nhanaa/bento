@@ -1,11 +1,14 @@
 import React from "react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import useLogout from "@/hooks/useLogout";
 
 interface HeaderProps {
   name: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({ name }) => {
+  const { logout } = useLogout();
+  
   function getInitials(name: string): string {
     const nameParts = name.split(" ");
     const initials = nameParts
@@ -22,7 +25,9 @@ export const Header: React.FC<HeaderProps> = ({ name }) => {
       </Avatar>
       <div className="flex flex-col">
         <h4 className="font-semibold text-gray-800 text-lg">{name}</h4>
-        <p className="text-red-500 text-sm hover:underline">Logout</p>
+        <p className="text-red-500 text-sm hover:underline" onClick={logout}>
+          Logout
+        </p>
       </div>
     </div>
   );
