@@ -28,8 +28,7 @@ mongo_client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
 db = mongo_client[DB_NAME]
 
 
-# @app.post("/summarize/", response_model=SummarizeOutput)
-def summarize_pdf(url: str) -> dict:
+async def summarize_pdf(url: str) -> dict:
     print("************************************")
     print("Loading the language model...")
     print("************************************")
@@ -45,7 +44,10 @@ def summarize_pdf(url: str) -> dict:
     model_kwargs = {"device": "cpu"}
     encode_kwargs = {"normalize_embeddings": False}
     huggingface_embeddings = HuggingFaceEmbeddings(
-        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
+        model_name=model_name,
+        model_kwargs=model_kwargs,
+        encode_kwargs=encode_kwargs,
+        show_progress=True,
     )
 
     print("************************************")
@@ -57,11 +59,11 @@ def summarize_pdf(url: str) -> dict:
     pages = loader.load()
     print(f"Loaded {len(pages)} pages from the PDF.")
 
-    text = ""
-    for page in pages:
-        text += page.page_content
+    # text = ""
+    # for page in pages:
+    #     text += page.page_content
 
-    text = text.replace("\t", " ")
+    # text = text.replace("\t", " ")
 
     print("************************************")
     print("Splitting text into chunks...")
@@ -70,17 +72,30 @@ def summarize_pdf(url: str) -> dict:
         separators=["\n\n", "\n", "\t"], chunk_size=4000, chunk_overlap=500
     )
 
-    docs: List[Document] = text_splitter.create_documents([text])
+    # docs: List[Document] = text_splitter.create_documents([text])
+    docs: List[Document] = text_splitter.split_documents(pages)
+
     print(f"Created {len(docs)} document chunks.")
 
     print("************************************")
     print("Embedding documents...")
     print("************************************")
-    vectors: List[List[float]] = huggingface_embeddings.embed_documents(
+    vectors: List[List[float]] = await huggingface_embeddings.aembed_documents(
         [x.page_content for x in docs]
     )
 
-    num_clusters = 5
+    # vectors: List[List[float]] = huggingface_embeddings.embed_documents(
+    #     [x.page_content for x in docs]
+    # )
+
+    num_docs = len(docs)
+
+    # Set the maximum number of clusters you'd want
+    max_clusters = 10  # Or whatever maximum makes sense in your context
+
+    # Use a simple heuristic like square root of number of docs, capped by max_clusters (GPT generated)
+    num_clusters = min(max_clusters, max(1, int(num_docs**0.5)))
+
     print(f"Performing K-means clustering with {num_clusters} clusters...")
     kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(vectors)
 

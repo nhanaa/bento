@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Union, Any
+from typing import List, Union, Any, Dict
 
 import os
 from dotenv import load_dotenv
@@ -10,7 +10,6 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, HttpUrl, field_serializer
 from typing_extensions import Annotated
 from langchain_community.document_loaders import WebBaseLoader
-from custom_vectorstore import CustomAzureCosmosDBVectorSearch
 from langchain_community.vectorstores.azure_cosmos_db import AzureCosmosDBVectorSearch
 from langchain_openai import AzureChatOpenAI
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -68,17 +67,8 @@ class VisitData(BaseModel):
     visitCount: int
 
 
-class LinkRecInput(BaseModel):
-    query: str
-
-
-class ChunkList(BaseModel):
-    links_list: List[HttpUrl]
-
-
-# Define the API endpoint for getting link recommendations
-@app.get("/get_links/{user_id}")
-def get_links(user_id: str, req_body: LinkRecInput = Body(...)) -> List[str]:
+# return a json format of list of urls
+def get_links(user_id: str, desc: str) -> Dict[str, List[str]]:
     """
     This assumes that the browsing history is stored in the Azure Cosmos DB
     and its title and URL are combined, embedded, and stored as vectors.
@@ -87,33 +77,26 @@ def get_links(user_id: str, req_body: LinkRecInput = Body(...)) -> List[str]:
     url = "https://example.com"
     combined_title_url = title + " " + url -> "Hello world https://example.com"
     """
-    try:
-        COLLECTION_NAME = "browsing_history"
-        collection = db[COLLECTION_NAME]
+    COLLECTION_NAME = "browsing_history"
+    collection = db[COLLECTION_NAME]
 
-        # Initialize the vector store
-        vectorstore = AzureCosmosDBVectorSearch(
-            collection=collection,
-            embedding=huggingface_embeddings,
-            index_name="website_vector_index",
-            embedding_key="website_vector_field",
-            # look for the url to return as page content, the rest will be considered metadata
-            text_key="url",
-        )
-        if not vectorstore.index_exists():
-            vectorstore.create_index(dimensions=768)
+    # Initialize the vector store
+    vectorstore = AzureCosmosDBVectorSearch(
+        collection=collection,
+        embedding=huggingface_embeddings,
+        index_name="website_vector_index",
+        embedding_key="website_vector_field",
+        # look for the url to return as page content, the rest will be considered metadata
+        text_key="url",
+    )
+    if not vectorstore.index_exists():
+        vectorstore.create_index(dimensions=768)
 
-        # Perform similarity search
-        similar_documents = vectorstore.similarity_search(
-            req_body.query, score_threshold=0.35, k=10
-        )
+    # Perform similarity search
+    similar_documents = vectorstore.similarity_search(desc, score_threshold=0.35, k=10)
 
-        # Return the search results
-        return [doc.page_content for doc in similar_documents]
-
-    except Exception as e:
-        # Handle potential errors
-        raise HTTPException(status_code=500, detail=str(e))
+    # Return the search results
+    return {"links_list": [doc.page_content for doc in similar_documents]}
 
 
 @app.post("/insert_browsing_history", status_code=201)
@@ -140,5 +123,3 @@ def insert_browsing_history(data: List[VisitData] = Body(...)) -> None:
 @app.get("/test")
 def test_endpoint():
     return {"message": "This is a test"}
-
-

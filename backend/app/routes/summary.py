@@ -8,6 +8,7 @@ import sys
 print(sys.path)
 # from backend.app.services.summarization import summarize_pdf
 from ..services.summarization import summarize_pdf
+
 router = APIRouter()
 
 
@@ -21,9 +22,9 @@ class SummarizeInput(BaseModel):
 
 
 @router.post("/summarize/", response_model=SummarizeOutput)
-def summarize(req_body: SummarizeInput = Body(...)) -> Any:
+async def summarize(req_body: SummarizeInput = Body(...)) -> Any:
     try:
-        result = summarize_pdf(str(req_body.url))
+        result = await summarize_pdf(str(req_body.url))
         print(result)
         return SummarizeOutput(**result)
     except Exception as e:

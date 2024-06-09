@@ -28,7 +28,8 @@ For ONE given website url, document id, and document summary, create and add chu
 user id, folder_id
 """
 
-def create_chunks(
+
+async def create_chunks(
     user_id: str, folder_id: str, document_id: str, url: str, doc_summary: str
 ):
     COLLECTION_NAME = "chunks"
@@ -77,7 +78,7 @@ def create_chunks(
         )
 
     # Add the documents to the vector store
-    vectorstore.add_documents(docs)
+    await vectorstore.aadd_documents(docs)
 
 
 def ensure_index(collection, index_definitions, collection_name: str):
