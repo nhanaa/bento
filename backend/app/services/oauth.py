@@ -14,6 +14,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("GOOGLE_SECRET_KEY")
 CORS(app, supports_credentials=True)
+userService = UserService()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_AUTH_URL = "http://127.0.0.1:5000/oauth/google/callback"
@@ -67,9 +68,9 @@ class OAuthService:
             credentials = OAuthService.google_flow.credentials
             service = build('oauth2', 'v2', credentials=credentials)
             user_info = service.userinfo().get().execute()
-            user = UserService.get_user_by_email(user_info['email'])
+            user = userService.get_user_by_email(user_info['email'])
             if not user:
-                user, _ = UserService.create_user(user_info["email"],user_info['name'])
+                user, _ = userService.create_user(user_info["email"],user_info['name'])
             token = OAuthService.create_token(user_info)
             react_app_url = f"http://localhost:5173/auth?token={token}"
             return redirect(react_app_url)
