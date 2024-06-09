@@ -7,59 +7,105 @@ folder_service = FolderService()
 # folders
 @folder_bp.route('/', methods=['POST'])
 def add_folder():
-    data = request.json
-    folder = folder_service.create_folder(data['name'], data['summary'])
+    data = request.get_json()
+    folder = folder_service.create_folder(data['user_id'], data['name'], data['summary'])
     return jsonify(folder), 201
 
-@folder_bp.route('/all', methods=['GET'])
-def get_folders():
-    return jsonify(folder_service.get_folders())
+@folder_bp.route('/all/<user_id>', methods=['GET'])
+def get_folders_by_user_id(user_id):
+    folders = folder_service.get_folders_by_user_id(user_id)
+    if not folders:
+        return jsonify({"error": "Folders not found"}), 404
+    return jsonify(folders)
 
-@folder_bp.route('/<folder_name>', methods=['GET'])
-def get_folder(folder_name):
-    return jsonify(folder_service.get_folder_by_name(folder_name))
+@folder_bp.route('/<folder_id>/', methods=['GET'])
+def get_folder(folder_id):
+    folder = folder_service.get_folder_by_id(folder_id)
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify(folder)
+
+@folder_bp.route('/<folder_id>/', methods=['PUT'])
+def update_folder(folder_id):
+    data = request.json
+    folder = folder_service.update_folder_by_id(folder_id, data)
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify(folder)
+
+@folder_bp.route('/<folder_id>/', methods=['DELETE'])
+def delete_folder(folder_id):
+    folder = folder_service.delete_folder_by_id(folder_id)
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify({"message": "Folder deleted successfully"})
 
 # folder web_urls
-@folder_bp.route('/<folder_name>/web_urls', methods=['GET'])
-def get_folder_web_urls(folder_name):
-    return jsonify(folder_service.get_web_urls(folder_name))
+@folder_bp.route('/<folder_id>/web_urls', methods=['GET'])
+def get_folder_web_urls(folder_id):
+    web_urls = folder_service.get_web_urls(folder_id)
+    if web_urls == None:
+        return jsonify({"error": "Web URLs not found"}), 404
+    return jsonify(web_urls)
 
-@folder_bp.route('/<folder_name>/web_urls/add', methods=['PUT'])
-def add_folder_web_urls(folder_name):
+@folder_bp.route('/<folder_id>/web_urls', methods=['PUT'])
+def add_folder_web_urls(folder_id):
     data = request.json
-    return jsonify(folder_service.add_web_urls(folder_name, data['web_urls']))
+    folder = folder_service.add_web_urls(folder_id, data['web_urls'])
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify(folder)
 
-@folder_bp.route('/<folder_name>/web_urls/delete', methods=['PUT'])
-def delete_folder_web_urls(folder_name):
-    data = request.json
-    return jsonify(folder_service.delete_web_urls(folder_name, data['web_urls'])) 
+@folder_bp.route('/<folder_id>/web_urls', methods=['DELETE'])
+def delete_folder_web_urls(folder_id):
+    folder = folder_service.delete_web_urls(folder_id)
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify(folder)
 
 # folder image_urls
-@folder_bp.route('/<folder_name>/image_urls', methods=['GET'])
-def get_folder_image_urls(folder_name):
-    return jsonify(folder_service.get_image_urls(folder_name))
+@folder_bp.route('/<folder_id>/image_urls', methods=['GET'])
+def get_folder_image_urls(folder_id):
+    image_urls = folder_service.get_image_urls(folder_id)
+    if image_urls == None:
+        return jsonify({"error": "Image URLs not found"}), 404
+    return jsonify(image_urls)
 
-@folder_bp.route('/<folder_name>/image_urls/add', methods=['PUT'])
-def add_folder_image_urls(folder_name):
+@folder_bp.route('/<folder_id>/image_urls', methods=['PUT'])
+def add_folder_image_urls(folder_id):
     data = request.json
-    return jsonify(folder_service.add_image_urls(folder_name, data['image_urls']))
+    folder = folder_service.add_image_urls(folder_id, data['image_urls'])
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify(folder)
 
-@folder_bp.route('/<folder_name>/image_urls/delete', methods=['PUT'])
-def delete_folder_image_urls(folder_name):
-    data = request.json
-    return jsonify(folder_service.delete_image_urls(folder_name, data['image_urls'])) 
+
+@folder_bp.route('/<folder_id>/image_urls', methods=['DELETE'])
+def delete_folder_image_urls(folder_id):
+    folder = folder_service.delete_image_urls(folder_id)
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify(folder)
 
 # folder download_urls
-@folder_bp.route('/<folder_name>/download_urls', methods=['GET'])
-def get_folder_download_urls(folder_name):
-    return jsonify(folder_service.get_download_urls(folder_name))
+@folder_bp.route('/<folder_id>/download_urls', methods=['GET'])
+def get_folder_download_urls(folder_id):
+    download_urls = folder_service.get_download_urls(folder_id)
+    if download_urls == None:
+        return jsonify({"error": "Download URLs not found"}), 404
+    return jsonify(download_urls)
 
-@folder_bp.route('/<folder_name>/download_urls/add', methods=['PUT'])
-def add_folder_download_urls(folder_name):
+@folder_bp.route('/<folder_id>/download_urls', methods=['PUT'])
+def add_folder_download_urls(folder_id):
     data = request.json
-    return jsonify(folder_service.add_download_urls(folder_name, data['download_urls']))
+    folder = folder_service.add_download_urls(folder_id, data['download_urls'])
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify(folder)
 
-@folder_bp.route('/<folder_name>/download_urls/delete', methods=['PUT'])
-def delete_folder_download_urls(folder_name):
-    data = request.json
-    return jsonify(folder_service.delete_download_urls(folder_name, data['download_urls'])) 
+@folder_bp.route('/<folder_id>/download_urls', methods=['DELETE'])
+def delete_folder_download_urls(folder_id):
+    folder = folder_service.delete_download_urls(folder_id)
+    if not folder:
+        return jsonify({"error": "Folder not found"}), 404
+    return jsonify(folder)

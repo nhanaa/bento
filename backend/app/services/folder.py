@@ -1,79 +1,115 @@
-from flask import jsonify
 from models.folder import Folder
-from utils.db import CosmosDB
-import uuid
+from app import db
+from utils.utils import jsonify_document
+from bson import ObjectId
 
 class FolderService:
     def __init__(self):
-        self.container = CosmosDB.get_container('Folders')
+        if 'folders' not in db.list_collection_names():
+            db.create_collection('folders')
+        self.collection = db.get_collection('folders')
 
-    def create_folder(self, name, summary):
-        folder = Folder(name, summary)
-        folder.id = str(uuid.uuid4())
-        self.container.create_item(body=folder)
-        return folder
+    def create_folder(self, user_id, name, summary):
+        folder = self.get_folder_by_name(name)
+        if folder:
+            return folder
 
-    def get_folders(self):
-        query = "SELECT * FROM c"
-        items = list(self.container.query_items(query=query, enable_cross_partition_query=True))
-        return [Folder.from_dict(item).to_dict() for item in items]
-    
-    def get_folder(self, query):
-        items = list(self.container.query_items(query=query, enable_cross_partition_query=True))
-        if not items:
-            return None
-        folder = Folder.from_dict(items[0])
-        return folder.to_dict()
+        folder = Folder(user_id, name, summary)
+        result = self.collection.insert_one(folder.to_dict())
+        inserted_id = result.inserted_id
+        folder = self.collection.find_one({'_id': ObjectId(inserted_id)})
+
+        return jsonify_document(folder)
+
+    def get_folders_by_user_id(self, user_id):
+        folders = list(self.collection.find({'user_id': user_id}))
+        return jsonify_document(folders)
 
     def get_folder_by_id(self, folder_id):
-        query = f"SELECT * FROM Folders u WHERE u.id = '{folder_id}'"
-        return self.get_folder(query)
-    
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        return jsonify_document(folder)
+
     def get_folder_by_name(self, folder_name):
-        query = f"SELECT * FROM Folders u WHERE u.name = '{folder_name}'"
-        return self.get_folder(query)
-    
-    def get_web_urls(self, folder_name):
-        folder = self.get_folder_by_name(folder_name)
-        return folder.web_urls
-    
-    def get_image_urls(self, folder_name):
-        folder = self.get_folder_by_name(folder_name)
-        return folder.image_urls
-    
-    def get_download_urls(self, folder_name):
-        folder = self.get_folder_by_name(folder_name)
-        return folder.download_urls
-    
-    def add_web_urls(self, folder_name, new_web_urls):
-        folder = self.get_folder_by_name(folder_name)
-        folder.web_urls.extend(new_web_urls)
-        return folder
-    
-    def add_image_urls(self, folder_name, new_image_urls):
-        folder = self.get_folder_by_name(folder_name)
-        folder.image_urls.extend(new_image_urls)
-        return folder
+        folder = self.collection.find_one({'name': folder_name})
+        return jsonify_document(folder)
 
-    def add_download_urls(self, folder_name, new_download_urls):
-        folder = self.get_folder_by_name(folder_name)
-        folder.download_urls.extend(new_download_urls)
-        return folder
+    def update_folder_by_id(self, folder_id, data):
+        result = self.collection.update_one({'_id': ObjectId(folder_id)}, {'$set': data})
+        if result.modified_count > 0:
+            updated_folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+            return jsonify_document(updated_folder)
+        else:
+            return None
 
-    def delete_web_urls(self, folder_name, web_url):
-        folder = self.get_folder_by_name(folder_name)
-        folder.web_urls.remove(web_url)
-        return folder
-    
-    def delete_image_urls(self, folder_name, image_url):
-        folder = self.get_folder_by_name(folder_name)
-        folder.image_urls.remove(image_url)
-        return folder
-    
-    def delete_download_urls(self, folder_name, download_url):
-        folder = self.get_folder_by_name(folder_name)
-        folder.download_urls.remove(download_url)
-        return folder
-    
-    
-        
+    def delete_folder_by_id(self, folder_id):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        self.collection.delete_one({'_id': ObjectId(folder_id)})
+        return jsonify_document(folder)
+
+    def get_web_urls(self, folder_id):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        return folder['web_urls']
+
+    def get_image_urls(self, folder_id):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        return folder['image_urls']
+
+    def get_download_urls(self, folder_id):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        return folder['download_urls']
+
+    def add_web_urls(self, folder_id, new_web_urls):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        folder['web_urls'].extend(new_web_urls)
+        self.collection.update_one({'_id': ObjectId(folder_id)}, {'$set': folder})
+        return jsonify_document(folder)
+
+    def add_image_urls(self, folder_id, new_image_urls):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        folder['image_urls'].extend(new_image_urls)
+        self.collection.update_one({'_id': ObjectId(folder_id)}, {'$set': folder})
+        return jsonify_document(folder)
+
+    def add_download_urls(self, folder_id, new_download_urls):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        folder['download_urls'].extend(new_download_urls)
+        self.collection.update_one({'_id': ObjectId(folder_id)}, {'$set': folder})
+        return jsonify_document(folder)
+
+    def delete_web_urls(self, folder_id):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        folder['web_urls'] = []
+        self.collection.update_one({'_id': ObjectId(folder_id)}, {'$set': folder})
+        return jsonify_document(folder)
+
+    def delete_image_urls(self, folder_id):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        folder['image_urls'] = []
+        self.collection.update_one({'_id': ObjectId(folder_id)}, {'$set': folder})
+        return jsonify_document(folder)
+
+    def delete_download_urls(self, folder_id):
+        folder = self.collection.find_one({'_id': ObjectId(folder_id)})
+        if not folder:
+            return None
+        folder['download_urls'] = []
+        self.collection.update_one({'_id': ObjectId(folder_id)}, {'$set': folder})
+        return jsonify_document(folder)
