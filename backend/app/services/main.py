@@ -19,7 +19,7 @@ def query_agent(user_id: str, folder_id: str, query: ChatInput = Body(...)):
     try:
         agent_with_chat_history = create_agent(user_id, folder_id)
         query_response = agent_with_chat_history.invoke(
-            {"input": query.text, "folder_topic": "Economics"},
+            {"input": query.text, "folder_topic": "machine learning/AI/NLP"},
             config={"configurable": {"user_id": user_id, "folder_id": folder_id}},
         )
         return query_response

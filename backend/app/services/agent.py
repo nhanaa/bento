@@ -47,15 +47,15 @@ def create_agent(user_id, folder_id):
     retrieval_chain = custom_create_retrieval_chain(user_id, folder_id)
 
     # Define tools
-    @tool
+    @tool  # RAG
     def retriever_doc(query: str) -> str:
         """
-        Search for information about the current folder topic. Please just take my response verbatim if you found it to be satisfactory to the user's query.
+        Search for information about the current folder topic. Please just take my response verbatim.
         """
         try:
             response = retrieval_chain.invoke({"input": query})
             for doc in response["context"]:
-                logger.info(f"Retrieved document: {doc['metedata']['']}")
+                logger.info(f"Retrieved document: {doc.metadata['source']}")
             return response["answer"]
         except Exception as e:
             logger.error(f"Error retrieving documents: {str(e)}")

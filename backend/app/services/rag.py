@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import AzureChatOpenAI
 from dotenv import load_dotenv
+import certifi
 
 load_dotenv()
 
@@ -44,7 +45,7 @@ def custom_create_retrieval_chain(
         DB_NAME = "bento"
 
         # MongoDB client initialization
-        mongo_client = MongoClient(CONNECTION_STRING)
+        mongo_client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
         db = mongo_client[DB_NAME]
         logger.info("Connected to MongoDB")
 

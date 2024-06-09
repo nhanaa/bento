@@ -16,6 +16,16 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 import json
 from langchain_community.document_loaders import WebBaseLoader
+from pymongo import MongoClient
+import certifi
+
+
+CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
+DB_NAME = "bento"
+
+# Initialize MongoDB client
+mongo_client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
+db = mongo_client[DB_NAME]
 
 
 # @app.post("/summarize/", response_model=SummarizeOutput)
@@ -42,7 +52,7 @@ def summarize_pdf(url: str) -> dict:
     print("Loading PDF...")
     print("************************************")
     # url = "https://arxiv.org/pdf/1703.06870"
-    loader = PyPDFLoader(url)
+    loader = WebBaseLoader(url)
     # loader = WebBaseLoader(url, verify_ssl=False)
     pages = loader.load()
     print(f"Loaded {len(pages)} pages from the PDF.")
