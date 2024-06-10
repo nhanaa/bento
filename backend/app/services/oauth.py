@@ -8,6 +8,7 @@ from googleapiclient.discovery import build
 from requests_oauthlib import OAuth2Session
 from dotenv import load_dotenv
 from services.user import UserService
+import json
 
 load_dotenv()
 
@@ -70,13 +71,23 @@ class OAuthService:
             user_info = service.userinfo().get().execute()
             user = userService.get_user_by_email(user_info['email'])
             if not user:
-                user, _ = userService.create_user(user_info["email"],user_info['name'])
+                user, _ = userService.create_user(user_info["email"], user_info['name'])
+            
+            # Convert datetime objects to strings
+            user_serializable = {
+                "email": user["email"],
+                "name": user["name"],
+                "created_at": user["created_at"].isoformat() if isinstance(user["created_at"], datetime.datetime) else user["created_at"],
+                "updated_at": user["updated_at"].isoformat() if isinstance(user["updated_at"], datetime.datetime) else user["updated_at"]
+            }
+            
             token = OAuthService.create_token(user_info)
-            react_app_url = f"http://localhost:5173/auth?token={token}"
+            user_json = json.dumps(user_serializable)
+            react_app_url = f"http://localhost:5173/auth?token={token}&user={user_json}"
             return redirect(react_app_url)
         except Exception as e:
-            print(f"Error during Google callback: {e}")  # Debugging line
             return str(e), 500
+
 
     @staticmethod
     def logout():

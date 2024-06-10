@@ -3,12 +3,15 @@ from flask import Flask
 from pymongo import MongoClient
 from config import Config
 from dotenv import load_dotenv
+from flask_cors import CORS, cross_origin
 
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
 app.app_context()
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Initialize Azure Cosmos DB
 # CosmosDB.init_app(app)
@@ -29,6 +32,8 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix='/users')
     app.register_blueprint(folder_bp, url_prefix='/folders')
     app.register_blueprint(oauth_bp, url_prefix='/oauth')
+
+    
     return app
 
 if __name__ == '__main__':

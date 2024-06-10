@@ -6,7 +6,8 @@ const useLogout = () => {
 
   const logout = async () => {
     try {
-      await axios.post('http://127.0.0.1:5000/logout');
+      await axios.post('http://127.0.0.1:5000/oauth/logout');
+      console.log("logged out successfully!");
       localStorage.removeItem("token");
       navigate("/");
     } catch (error) {

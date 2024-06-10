@@ -5,13 +5,18 @@ import { mockFolders } from "@/lib/mocks";
 import { FolderCard } from "@/components/homepage/FolderCard";
 import { AddFolderCard } from "@/components/homepage/AddFolderCard";
 import Layout from "./Layout";
+import { useUser } from "@/contexts/UserContext";
 
 const Homepage: React.FC = () => {
   const [folders, setFolders] = useState<FolderCardProps[]>(mockFolders);
+  const { user } = useUser();
+  const getFirstName = (fullName: string): string => {
+    return fullName.split(" ")[0];
+  };
   return (
     <Layout>
       <div className="h-1/2 flex flex-col justify-center items-center gap-5 p-10">
-        <h1 className="font-bold ">Hello Pax!</h1>
+        <h1 className="font-bold ">Hello {getFirstName(user["name"])}!</h1>
         <Weather />
       </div>
       <div className="w-screen h-1/2 bg-gray-50 border-t border-gray-200">
@@ -29,7 +34,5 @@ const Homepage: React.FC = () => {
     </Layout>
   );
 };
-
-
 
 export default Homepage;

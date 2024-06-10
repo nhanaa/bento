@@ -24,4 +24,3 @@ def google_callback():
 @oauth_bp.route('/logout', methods=['GET', 'POST'])
 def logout():
     return oauth_service.logout()
-
