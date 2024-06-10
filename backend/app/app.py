@@ -1,22 +1,23 @@
 from flask import Flask
-from routes.user import user_bp
-from routes.folder import folder_bp
-from routes.file import file_bp
-from utils.db import CosmosDB
+from pymongo import MongoClient
 from config import Config
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
+app = Flask(__name__)
+app.config.from_object(Config)
+app.app_context()
 
-    # Initialize Azure Cosmos DB
-    CosmosDB.init_app(app)
+# Initialize Azure Cosmos DB
+# CosmosDB.init_app(app)
+mongo = MongoClient(app.config['MONGO_DB_URI'])
+db = mongo[app.config['MONGO_DB_NAME']]
+
+def create_app():
+    from routes.user import user_bp
+    from routes.folder import folder_bp
 
     # Register blueprints
     app.register_blueprint(user_bp, url_prefix='/users')
     app.register_blueprint(folder_bp, url_prefix='/folders')
-    app.register_blueprint(file_bp, url_prefix='/files')
-
     return app
 
 if __name__ == '__main__':

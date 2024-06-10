@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-from utils.db import CosmosDB
 from services.user import UserService
 
 user_bp = Blueprint('user_bp', __name__)
@@ -29,12 +28,12 @@ def create_user():
     data = request.get_json()
     email = data.get('email')
     name = data.get('name')
-    
+
     if not email or not name:
         return jsonify({"error": "Email and name are required"}), 400
-    
+
     user = user_service.create_user(email, name)
-    return jsonify(user.to_dict()), 201
+    return jsonify(user), 201
 
 @user_bp.route('/<user_id>', methods=['PUT'])
 def update_user_by_id(user_id):
@@ -48,6 +47,7 @@ def update_user_by_id(user_id):
 def update_user_by_email(email):
     data = request.get_json()
     user = user_service.update_user_by_email(email, data)
+    print('User:', user)
     if not user:
         return jsonify({"error": "User not found"}), 404
     return jsonify(user)

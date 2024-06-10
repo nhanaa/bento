@@ -1,9 +1,8 @@
 import datetime
-import uuid
 
 class Folder:
-    def __init__(self, name, summary):
-        self.id = str(uuid.uuid4())
+    def __init__(self, user_id, name, summary):
+        self.user_id = user_id
         self.name = name
         self.last_synced_at = datetime.datetime.now()
         self.summary = summary
@@ -13,7 +12,7 @@ class Folder:
 
     def to_dict(self):
         return {
-            'id': self.id,
+            'user_id': self.user_id,
             'name': self.name,
             'last_synced_at': self.last_synced_at,
             'summary': self.summary,
