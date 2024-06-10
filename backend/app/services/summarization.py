@@ -18,37 +18,13 @@ import json
 from langchain_community.document_loaders import WebBaseLoader
 from pymongo import MongoClient
 import certifi
-
-
-CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
-DB_NAME = "bento"
-
-# Initialize MongoDB client
-mongo_client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
-db = mongo_client[DB_NAME]
+from ..utils.ai_tools import llm, huggingface_embeddings
 
 
 async def summarize_pdf(url: str) -> dict:
     print("************************************")
     print("Loading the language model...")
     print("************************************")
-    llm = AzureChatOpenAI(
-        temperature=0,
-        model_name="gpt-4-32k",
-        openai_api_version="2024-02-01",
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    )
-
-    model_name = "sentence-transformers/all-mpnet-base-v2"
-    model_kwargs = {"device": "cpu"}
-    encode_kwargs = {"normalize_embeddings": False}
-    huggingface_embeddings = HuggingFaceEmbeddings(
-        model_name=model_name,
-        model_kwargs=model_kwargs,
-        encode_kwargs=encode_kwargs,
-        show_progress=True,
-    )
 
     print("************************************")
     print("Loading PDF...")

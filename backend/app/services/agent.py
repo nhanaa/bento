@@ -6,19 +6,22 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.agents import tool, AgentExecutor, create_openai_functions_agent
-from custom_vectorstore import CustomAzureCosmosDBVectorSearch
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from rag import custom_create_retrieval_chain
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.runnables.history import (
     RunnableWithMessageHistory,
     ConfigurableFieldSpec,
 )
-from prompt import agent_prompt
 from langchain_community.chat_message_histories.cosmos_db import (
     CosmosDBChatMessageHistory,
 )
 from langchain_openai import AzureChatOpenAI
+
+# import from local modules
+from .custom_vectorstore import CustomAzureCosmosDBVectorSearch
+from .rag import custom_create_retrieval_chain
+from .prompt import agent_prompt
+from ..utils.ai_tools import llm, huggingface_embeddings
 
 # Load environment variables
 load_dotenv()
@@ -28,19 +31,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # MongoDB client setup
-CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
-mongo_client = MongoClient(CONNECTION_STRING)
-db = mongo_client["bento"]
-logger.info("Connected to MongoDB")
+# CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
+# mongo_client = MongoClient(CONNECTION_STRING)
+# db = mongo_client["bento"]
+# logger.info("Connected to MongoDB")
 
 # HuggingFace Embeddings initialization
-model_name = "sentence-transformers/all-mpnet-base-v2"
-model_kwargs = {"device": "cpu"}
-encode_kwargs = {"normalize_embeddings": False}
-huggingface_embeddings = HuggingFaceEmbeddings(
-    model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
-)
-logger.info("Initialized HuggingFace embeddings")
+# model_name = "sentence-transformers/all-mpnet-base-v2"
+# model_kwargs = {"device": "cpu"}
+# encode_kwargs = {"normalize_embeddings": False}
+# huggingface_embeddings = HuggingFaceEmbeddings(
+#     model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
+# )
+# logger.info("Initialized HuggingFace embeddings")
 
 
 def create_agent(user_id, folder_id):
@@ -65,13 +68,13 @@ def create_agent(user_id, folder_id):
     tools = [retriever_doc, search]
 
     # Initialize Azure OpenAI
-    llm = AzureChatOpenAI(
-        temperature=0,
-        model_name="gpt-4-32k",
-        openai_api_version="2024-02-01",
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    )
+    # llm = AzureChatOpenAI(
+    #     temperature=0,
+    #     model_name="gpt-4-32k",
+    #     openai_api_version="2024-02-01",
+    #     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    #     openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    # )
     logger.info("Initialized AzureChatOpenAI")
 
     # Create agent and executor

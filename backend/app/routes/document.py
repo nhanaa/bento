@@ -4,7 +4,7 @@ from typing import Any, List
 from pydantic import BaseModel, HttpUrl, Field
 
 from ..services.document import process_one_document
-from ..models.rag_pipeline import LinkList
+from ..models.rag_model import LinkList
 from asyncio import gather
 
 

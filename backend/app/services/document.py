@@ -5,7 +5,7 @@ from pydantic import BaseModel, HttpUrl, Field
 from datetime import datetime
 from .summarization import summarize_pdf
 from .chunk import create_chunks
-from ..models.rag_pipeline import Document
+from ..models.rag_model import Document
 from motor.motor_asyncio import AsyncIOMotorClient
 
 

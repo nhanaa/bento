@@ -57,16 +57,6 @@ async def validation_exception_handler(request, exc):
     return PlainTextResponse(str(exc), status_code=400)
 
 
-# Define the data models
-class VisitData(BaseModel):
-    id: int
-    lastVisitTime: datetime
-    title: str
-    typedCount: int
-    url: HttpUrl
-    visitCount: int
-
-
 # return a json format of list of urls
 def get_links(user_id: str, desc: str) -> Dict[str, List[str]]:
     """
@@ -99,8 +89,7 @@ def get_links(user_id: str, desc: str) -> Dict[str, List[str]]:
     return {"links_list": [doc.page_content for doc in similar_documents]}
 
 
-@app.post("/insert_browsing_history", status_code=201)
-def insert_browsing_history(data: List[VisitData] = Body(...)) -> None:
+def insert_browsing_history(data):
     """
     Inserts the browsing history data into the Azure Cosmos DB.
     """

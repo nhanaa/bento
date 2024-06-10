@@ -1,14 +1,17 @@
-from prompt import retrieval_prompt, document_prompt
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 import os
 from langchain.agents import tool
-from custom_vectorstore import CustomAzureCosmosDBVectorSearch
 from pymongo import MongoClient
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import AzureChatOpenAI
 from dotenv import load_dotenv
 import certifi
+
+# import from local module
+from .prompt import retrieval_prompt, document_prompt
+from .custom_vectorstore import CustomAzureCosmosDBVectorSearch
+from ..utils.ai_tools import chunk_collection, llm, huggingface_embeddings
 
 load_dotenv()
 
@@ -35,56 +38,60 @@ def custom_create_retrieval_chain(
 
     try:
         # Set up connection details
-        CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
-        if not CONNECTION_STRING:
-            logger.error(
-                "AZURE_COSMOS_DB_CONNECTION_STRING environment variable is not set"
-            )
-            return None
+        # CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
+        # if not CONNECTION_STRING:
+        #     logger.error(
+        #         "AZURE_COSMOS_DB_CONNECTION_STRING environment variable is not set"
+        #     )
+        #     return None
 
-        DB_NAME = "bento"
+        # DB_NAME = "bento"
 
-        # MongoDB client initialization
-        mongo_client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
-        db = mongo_client[DB_NAME]
-        logger.info("Connected to MongoDB")
+        # # MongoDB client initialization
+        # mongo_client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
+        # db = mongo_client[DB_NAME]
+        # logger.info("Connected to MongoDB")
 
         # Embedding model initialization
-        model_name = "sentence-transformers/all-mpnet-base-v2"
-        model_kwargs = {"device": "cpu"}
-        encode_kwargs = {"normalize_embeddings": False}
-        huggingface_embeddings = HuggingFaceEmbeddings(
-            model_name=model_name,
-            model_kwargs=model_kwargs,
-            encode_kwargs=encode_kwargs,
-        )
-        logger.info("Initialized HuggingFace embeddings")
+        # model_name = "sentence-transformers/all-mpnet-base-v2"
+        # model_kwargs = {"device": "cpu"}
+        # encode_kwargs = {"normalize_embeddings": False}
+        # huggingface_embeddings = HuggingFaceEmbeddings(
+        #     model_name=model_name,
+        #     model_kwargs=model_kwargs,
+        #     encode_kwargs=encode_kwargs,
+        # )
+        # logger.info("Initialized HuggingFace embeddings")
 
         # Collection access
-        COLLECTION_NAME = "documents"
-        collection = db[COLLECTION_NAME]
-        logger.info(f"Accessing collection: {COLLECTION_NAME}")
+        # COLLECTION_NAME = "documents"
+        # collection = db[COLLECTION_NAME]
+        # logger.info(f"Accessing collection: {COLLECTION_NAME}")
 
         # Document retrieval and processing
         retriever = CustomAzureCosmosDBVectorSearch(
-            collection,
+            chunk_collection,
             huggingface_embeddings,
         ).as_retriever(
-            search_kwargs={"pre_filter": {"user_id": user_id, "folder_id": folder_id}}
+            search_kwargs={
+                "pre_filter": {"user_id": user_id, "folder_id": folder_id},
+                "k": 5,
+                "score_threshold": 0.5,
+            },
         )
         logger.info("Initialized document retriever")
 
         # Initialize Azure OpenAI
-        llm = AzureChatOpenAI(
-            temperature=0,
-            model_name="gpt-4-32k",
-            openai_api_version="2024-02-01",
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-            openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-        )
-        if not llm:
-            logger.error("AzureChatOpenAI initialization failed")
-            return None
+        # llm = AzureChatOpenAI(
+        #     temperature=0,
+        #     model_name="gpt-4-32k",
+        #     openai_api_version="2024-02-01",
+        #     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        #     openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        # )
+        # if not llm:
+        #     logger.error("AzureChatOpenAI initialization failed")
+        #     return None
         logger.info("Initialized AzureChatOpenAI")
 
         # Create document and retrieval chains
