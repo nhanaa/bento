@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.folder import FolderService
+from ..services.folder import FolderService
 
 folder_bp = Blueprint('folders', __name__)
 folder_service = FolderService()

@@ -11,7 +11,7 @@ class LinkList(BaseModel):
     links_list: List[HttpUrl]
 
 
-class Document(BaseModel):
+class DocumentModel(BaseModel):
     title: str = Field(
         ..., title="Document Title", description="The title of the document"
     )
