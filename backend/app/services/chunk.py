@@ -2,9 +2,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import WebBaseLoader
 from pymongo.errors import DuplicateKeyError
 
-from .custom_vectorstore import CustomAzureCosmosDBVectorSearch
+
 from ..app import db
-from ..utils.ai_tools import huggingface_embeddings
+from .vectorstore_manager import VectorStoreManager
 
 """
 For ONE given website url, document id, and document summary, create and add chunks to vector db
@@ -17,47 +17,9 @@ class Chunk:
     embedding_key = "vectorContent"
 
     def __init__(self):
-        self.chunk_collection = db[self.CHUNK_COLLECTION_NAME]
-        self.chunk_vectorstore = CustomAzureCosmosDBVectorSearch(
-            self.chunk_collection,
-            huggingface_embeddings,
-            embedding_key=self.embedding_key,
-        )
-        self.ensure_indexes()
-
-    def ensure_indexes(self):
-        index_definitions = [
-            {"key": {"user_id": 1}, "name": "user_filter"},
-            {"key": {"folder_id": 1}, "name": "folder_filter"},
-            {
-                "name": "TitleVectorSearchIndex",
-                "key": {self.embedding_key: "cosmosSearch"},
-                "cosmosSearchOptions": {
-                    "kind": "vector-ivf",
-                    "numLists": 1,
-                    "similarity": "COS",
-                    "dimensions": 768,
-                },
-            },
-        ]
-        existing_indexes = self.chunk_collection.list_indexes()
-        existing_index_names = [index["name"] for index in existing_indexes]
-
-        for index_def in index_definitions:
-            index_name = index_def["name"]
-            if index_name not in existing_index_names:
-                try:
-                    db.command(
-                        {
-                            "createIndexes": self.CHUNK_COLLECTION_NAME,
-                            "indexes": [index_def],
-                        }
-                    )
-                    print(f"Index '{index_name}' created successfully.")
-                except DuplicateKeyError as e:
-                    print(f"Error creating index '{index_name}': {e}")
-            else:
-                print(f"Index '{index_name}' already exists.")
+        chunk_collection = db[self.CHUNK_COLLECTION_NAME]
+        vector_manager = VectorStoreManager(chunk_collection, self.embedding_key)
+        self.chunk_vectorstore = vector_manager.get_vectorstore()
 
     async def create_chunks(
         self, user_id: str, folder_id: str, document_id: str, url: str, doc_summary: str

@@ -6,12 +6,12 @@ from pymongo import MongoClient
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import AzureChatOpenAI
 from dotenv import load_dotenv
-import certifi
 
 # import from local module
 from .prompt import retrieval_prompt, document_prompt
-from .custom_vectorstore import CustomAzureCosmosDBVectorSearch
-from ..utils.ai_tools import chunk_collection, llm, huggingface_embeddings
+from ..utils.ai_tools import llm
+from .vectorstore_manager import VectorStoreManager
+from ..app import db
 
 load_dotenv()
 
@@ -37,62 +37,13 @@ def custom_create_retrieval_chain(
     logger = logging.getLogger(__name__)
 
     try:
-        # Set up connection details
-        # CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
-        # if not CONNECTION_STRING:
-        #     logger.error(
-        #         "AZURE_COSMOS_DB_CONNECTION_STRING environment variable is not set"
-        #     )
-        #     return None
+        CHUNK_COLLECTION_NAME = "chunks"
+        embedding_key = "vectorContent"
+        chunk_collection = db[CHUNK_COLLECTION_NAME]
+        vector_manager = VectorStoreManager(chunk_collection, embedding_key)
+        retriever = vector_manager.get_retriever(user_id, folder_id)
 
-        # DB_NAME = "bento"
-
-        # # MongoDB client initialization
-        # mongo_client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
-        # db = mongo_client[DB_NAME]
-        # logger.info("Connected to MongoDB")
-
-        # Embedding model initialization
-        # model_name = "sentence-transformers/all-mpnet-base-v2"
-        # model_kwargs = {"device": "cpu"}
-        # encode_kwargs = {"normalize_embeddings": False}
-        # huggingface_embeddings = HuggingFaceEmbeddings(
-        #     model_name=model_name,
-        #     model_kwargs=model_kwargs,
-        #     encode_kwargs=encode_kwargs,
-        # )
-        # logger.info("Initialized HuggingFace embeddings")
-
-        # Collection access
-        # COLLECTION_NAME = "documents"
-        # collection = db[COLLECTION_NAME]
-        # logger.info(f"Accessing collection: {COLLECTION_NAME}")
-
-        # Document retrieval and processing
-        retriever = CustomAzureCosmosDBVectorSearch(
-            chunk_collection,
-            huggingface_embeddings,
-        ).as_retriever(
-            search_kwargs={
-                "pre_filter": {"user_id": user_id, "folder_id": folder_id},
-                "k": 5,
-                "score_threshold": 0.5,
-            },
-        )
         logger.info("Initialized document retriever")
-
-        # Initialize Azure OpenAI
-        # llm = AzureChatOpenAI(
-        #     temperature=0,
-        #     model_name="gpt-4-32k",
-        #     openai_api_version="2024-02-01",
-        #     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        #     openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-        # )
-        # if not llm:
-        #     logger.error("AzureChatOpenAI initialization failed")
-        #     return None
-        logger.info("Initialized AzureChatOpenAI")
 
         # Create document and retrieval chains
         document_chain = create_stuff_documents_chain(

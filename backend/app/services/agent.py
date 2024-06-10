@@ -18,10 +18,9 @@ from langchain_community.chat_message_histories.cosmos_db import (
 from langchain_openai import AzureChatOpenAI
 
 # import from local modules
-from .custom_vectorstore import CustomAzureCosmosDBVectorSearch
 from .rag import custom_create_retrieval_chain
 from .prompt import agent_prompt
-from ..utils.ai_tools import llm, huggingface_embeddings
+from ..utils.ai_tools import llm
 
 # Load environment variables
 load_dotenv()
@@ -29,21 +28,6 @@ load_dotenv()
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# MongoDB client setup
-# CONNECTION_STRING = os.getenv("AZURE_COSMOS_DB_CONNECTION_STRING")
-# mongo_client = MongoClient(CONNECTION_STRING)
-# db = mongo_client["bento"]
-# logger.info("Connected to MongoDB")
-
-# HuggingFace Embeddings initialization
-# model_name = "sentence-transformers/all-mpnet-base-v2"
-# model_kwargs = {"device": "cpu"}
-# encode_kwargs = {"normalize_embeddings": False}
-# huggingface_embeddings = HuggingFaceEmbeddings(
-#     model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
-# )
-# logger.info("Initialized HuggingFace embeddings")
 
 
 def create_agent(user_id, folder_id):
@@ -67,14 +51,6 @@ def create_agent(user_id, folder_id):
     search = TavilySearchResults()
     tools = [retriever_doc, search]
 
-    # Initialize Azure OpenAI
-    # llm = AzureChatOpenAI(
-    #     temperature=0,
-    #     model_name="gpt-4-32k",
-    #     openai_api_version="2024-02-01",
-    #     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    #     openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    # )
     logger.info("Initialized AzureChatOpenAI")
 
     # Create agent and executor
