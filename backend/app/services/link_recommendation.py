@@ -83,7 +83,7 @@ def get_links(user_id: str, desc: str) -> Dict[str, List[str]]:
         vectorstore.create_index(dimensions=768)
 
     # Perform similarity search
-    similar_documents = vectorstore.similarity_search(desc, score_threshold=0.35, k=10)
+    similar_documents = vectorstore.similarity_search(desc, score_threshold=0.35, k=6)
 
     # Return the search results
     return {"links_list": [doc.page_content for doc in similar_documents]}
