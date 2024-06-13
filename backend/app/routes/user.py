@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-from utils.db import CosmosDB
 from services.user import UserService
 
 user_bp = Blueprint('user_bp', __name__)

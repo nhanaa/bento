@@ -1,15 +1,12 @@
 from utils.search import SearchEngine
+from services.folder import FolderService
 
-def getUserData(id):
-    return [
-        ['~/projects/bento/app.py', 'init python flask project'],
-        ['~/documents/cv/resume.pdf', 'job application for fullstack AI and python'],
-        ['~/documents/secrets/wallet.xls', 'money funding transaction money'],
-    ]
+def getUserData(user_id):
+    return FolderService.get_folders_by_user_id(user_id)
 
 class SearchService:
-    def search(self, query):
+    def search(self, user_id, query):
         se = SearchEngine()
-        se.seed('file', getUserData(1))
+        se.seed('file', getUserData(user_id))
 
         return se.query('file', query)

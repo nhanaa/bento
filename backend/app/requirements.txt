@@ -3,3 +3,4 @@ azure-core
 azure-cosmos
 python-dotenv
 whoosh
+pymongo

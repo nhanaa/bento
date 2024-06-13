@@ -1,34 +1,17 @@
-from azure.core.exceptions import AzureError
-from azure.cosmos import CosmosClient, PartitionKey
+from pymongo import MongoClient
 
-class CosmosDB:
+class MongoDB:
     client = None
-    database = None
-    containers = {}
+    db = None
+    collections = {}
 
     @classmethod
     def init_app(cls, app):
-        cls.client = CosmosClient(app.config['COSMOS_DB_URI'], credential=app.config['COSMOS_DB_KEY'])
-        cls.database = cls.client.create_database_if_not_exists(id=app.config['COSMOS_DB_DATABASE_NAME'])
-        cls.create_containers()
-
-        return (cls, app)
-
+        cls.client = MongoClient(app.config['MONGO_DB_URI'])
+        cls.db = cls.client[app.config['MONGO_DB_NAME']]
+        cls.collections['Users'] = cls.db['Users']
+        cls.collections['Folders'] = cls.db['Folders']
+    
     @classmethod
-    def create_containers(cls):
-        cls.containers['Users'] = cls.database.create_container_if_not_exists(
-            id='Users',
-            partition_key=PartitionKey(path='/id')
-        )
-        cls.containers['Folders'] = cls.database.create_container_if_not_exists(
-            id='Folders',
-            partition_key=PartitionKey(path='/id')
-        )
-        cls.containers['Files'] = cls.database.create_container_if_not_exists(
-            id='Files',
-            partition_key=PartitionKey(path='/id')
-        )
-
-    @classmethod
-    def get_container(cls, container_name):
-        return cls.containers.get(container_name)
+    def get_collection(cls, collection_name):
+        return cls.collections.get(collection_name)
