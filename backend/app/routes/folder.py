@@ -5,7 +5,7 @@ folder_bp = Blueprint('folders', __name__)
 folder_service = FolderService()
 
 # folders
-@folder_bp.route('/', methods=['POST'])
+@folder_bp.route('/', methods=['POST','OPTIONS'])
 def add_folder():
     data = request.get_json()
     folder = folder_service.create_folder(data['user_id'], data['name'], data['summary'])

@@ -4,16 +4,28 @@ import {
   SheetTrigger,
   SheetContent,
 } from "./ui/sheet";
-import { FolderCardProps } from "@/lib/types";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { FolderMenuItem } from "./homepage/FolderMenuItem";
 import { AddFolderCard } from "./homepage/AddFolderCard";
+import { useUser } from "@/contexts/UserContext";
+import { getFolders } from "@/hooks/useFolder";
+import { Skeleton } from "./ui/skeleton";
 
-interface SidebarProps {
-  folders: FolderCardProps[];
-}
 
-export const Sidebar: React.FC<SidebarProps> = ({ folders }) => {
+export const Sidebar: React.FC = () => {
+  const { user } = useUser();
+  const {
+    data: folders,
+    isLoading,
+    isError,
+    error,
+  } = getFolders(user?.id ?? "");
+
+  const getInitials = (name: string): string => {
+    const nameParts = name.split(" ");
+    const initials = nameParts.map((part) => part[0]).join("");
+    return initials.toUpperCase();
+  };
   return (
     <Sheet>
       <SheetTrigger className="bg-foreground border-none active:outline-none focus:outline-none">
@@ -23,11 +35,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ folders }) => {
         <div className="flex flex-col gap-5">
           <div className="flex flex-row gap-5 items-center">
             <Avatar className="bg-customViolet text-white">
-              <AvatarFallback>PN</AvatarFallback>
+              <AvatarFallback>{user && getInitials(user?.name)}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <h4 className="font-semibold text-gray-800 text-lg">
-                Pax Nguyen
+                {user?.name}
               </h4>
               <p className="text-red-500 text-sm hover:underline">Logout</p>
             </div>
@@ -44,9 +56,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ folders }) => {
             </div>
             <div className="h-full w-full">
               <div className="justify-center w-full flex flex-col">
-                {folders.map((folder, index) => (
-                  <FolderMenuItem key={index} {...folder} />
-                ))}
+                {isLoading ? (
+                  <>
+                    <Skeleton />
+                    <Skeleton />
+                  </>
+                ) : (
+                  <>
+                    {folders?.map((folder, index) => (
+                      <FolderMenuItem key={index} {...folder} />
+                    ))}
+                  </>
+                )}
               </div>
             </div>
           </div>

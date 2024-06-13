@@ -35,7 +35,6 @@ class OAuthService:
     def create_token(user_info):
         name = str(user_info.get('name', ''))
         email = str(user_info.get('email', ''))
-        print(f"SECRET_KEY: {app.secret_key}, Type: {type(app.secret_key)}")
         payload = {
             'name': name,
             'email': email,
@@ -44,10 +43,8 @@ class OAuthService:
         payload['exp'] = int(payload['exp'].timestamp())
         try:
             token = jwt.encode(payload, app.secret_key, algorithm='HS256')
-            print(f"Generated Token: {token}")  # Debugging line
             return token
         except Exception as e:
-            print(f"Error during token encoding: {e}")  # Debugging line
             raise e
 
     @staticmethod
@@ -56,10 +53,8 @@ class OAuthService:
             authorization_url, state = OAuthService.google_flow.authorization_url(access_type='offline', prompt='select_account')
             session['state'] = state
             session.modified = True  # Ensure the session is saved
-            print(f"Authorization URL: {authorization_url}")  # Debugging line
             return redirect(authorization_url)
         except Exception as e:
-            print(f"Error during Google login: {e}")  # Debugging line
             return str(e), 500
 
     @staticmethod

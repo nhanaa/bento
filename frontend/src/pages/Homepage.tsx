@@ -1,22 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Weather from "../components/homepage/TimeAndWeather";
 import { FolderCardProps } from "@/lib/types";
-import { mockFolders } from "@/lib/mocks";
 import { FolderCard } from "@/components/homepage/FolderCard";
 import { AddFolderCard } from "@/components/homepage/AddFolderCard";
 import Layout from "./Layout";
 import { useUser } from "@/contexts/UserContext";
+import { getFolders } from "@/hooks/useFolder";
 
 const Homepage: React.FC = () => {
-  const [folders, setFolders] = useState<FolderCardProps[]>(mockFolders);
   const { user } = useUser();
+  const {
+    data: foldersData,
+    isLoading,
+    isError,
+    error,
+  } = getFolders(user?.id ?? "");
+  const [folders, setFolders] = useState<FolderCardProps[]>([]);
+
+  useEffect(() => {
+    if (foldersData) {
+      setFolders(foldersData);
+    }
+  }, [foldersData]);
+
   const getFirstName = (fullName: string): string => {
     return fullName.split(" ")[0];
   };
   return (
     <Layout>
       <div className="h-1/2 flex flex-col justify-center items-center gap-5 p-10">
-        <h1 className="font-bold ">Hello {getFirstName(user["name"])}!</h1>
+        <h1 className="font-bold ">Hello {user && getFirstName(user["name"])}!</h1>
         <Weather />
       </div>
       <div className="w-screen h-1/2 bg-gray-50 border-t border-gray-200">

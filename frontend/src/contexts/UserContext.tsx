@@ -1,3 +1,4 @@
+import { User, UserContextType } from "@/lib/types";
 import React, {
   createContext,
   useContext,
@@ -6,21 +7,11 @@ import React, {
   FC,
 } from "react";
 
-interface User {
-  email: string;
-  token: string;
-}
-
-interface UserContextType {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-}
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}
@@ -35,3 +26,5 @@ export const useUser = (): UserContextType => {
   }
   return context;
 };
+
+

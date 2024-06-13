@@ -12,7 +12,7 @@ export const Landing: React.FC = () => {
   return (
     <div className="h-screen w-screen flex flex-col justify-center text-center items-center">
       <div className="flex flex-col gap-2 justify-center w-full h-1/2 items-center bg-customViolet-100 border-b border-gray-200">
-        <h1 className="font-bold text-3xl mb-4">
+        <h1 className="font-bold text-3xl mb-4 text-gray-800">
           Bento: Your Digital Organizer
         </h1>
         <Button onClick={handleGetStarted}>Get started</Button>
