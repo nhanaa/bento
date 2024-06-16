@@ -6,7 +6,7 @@ import uuid
 
 class UserService:
     def __init__(self):
-        self.collection = MongoDB.get_collection('Users')
+        self.collection = MongoDB.get_collection('users')
 
     def create_user(self, email, name):
         user = self.get_user_by_email(email)
@@ -39,7 +39,7 @@ class UserService:
         for key, value in data.items():
             setattr(user, key, value)
 
-        self.collection.update_one({"id": user.id}, {"$set": user.to_dict()})
+        self.collection.update_one({"id": user['id']}, {"$set": user.to_dict()})
         return user
 
     def update_user_by_id(self, user_id, data):
@@ -53,13 +53,15 @@ class UserService:
     def delete_user(self, user):
         if not user:
             return None
-        self.collection.delete_one({"id": user.id})
-        return user.to_dict()
+        self.collection.delete_one({"id": user['id']})
 
     def delete_user_by_id(self, user_id):
         user = self.get_user_by_id(user_id)
-        return self.delete_user(user)
+        self.delete_user(user)
 
     def delete_user_by_email(self, email):
         user = self.get_user_by_email(email)
-        return self.delete_user(user)
+        if not user:
+            return False
+        self.delete_user(user)
+        return True

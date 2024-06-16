@@ -62,7 +62,6 @@ def delete_user_by_id(user_id):
 
 @user_bp.route('/email/<email>', methods=['DELETE'])
 def delete_user_by_email(email):
-    user = user_service.delete_user_by_email(email)
-    if not user:
+    if not user_service.delete_user_by_email(email):
         return jsonify({"error": "User not found"}), 404
     return jsonify({"message": "User deleted successfully"})

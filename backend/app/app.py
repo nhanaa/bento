@@ -11,10 +11,12 @@ def create_app():
     
     from routes.user import user_bp
     from routes.folder import folder_bp
+    from routes.search import search_bp
 
     # Register blueprints
     app.register_blueprint(user_bp, url_prefix='/users')
-    app.register_blueprint(folder_bp, url_prefix='/folders')
+    app.register_blueprint(folder_bp, url_prefix='/users/<user_id>/folders')
+    app.register_blueprint(search_bp, url_prefix='/users/<user_id>/searches')
     return app
 
 if __name__ == '__main__':

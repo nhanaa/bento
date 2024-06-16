@@ -6,7 +6,7 @@ import uuid
 
 class FolderService:
     def __init__(self):
-        self.collection = MongoDB.get_collection('Users')
+        self.collection = MongoDB.get_collection('folders')
 
     def create_folder(self, name, summary, user_id):
         folder = Folder(name, summary, user_id)
@@ -24,7 +24,7 @@ class FolderService:
         return self.get_folder(query)
 
     def get_folder_by_name(self, folder_name, user_id):
-        query = {"name": folder_name, "user_id": user_id}
+        query = {"folder_name": folder_name, "user_id": user_id}
         return self.get_folder(query)
 
     def get_folder(self, query):
@@ -46,44 +46,47 @@ class FolderService:
     def add_web_urls(self, folder_name, new_web_urls, user_id):
         folder = self.get_folder_by_name(folder_name, user_id)
         if folder:
-            folder.web_urls.extend(new_web_urls)
+            folder.web_urls = list(set(new_web_urls) | set(folder.web_urls))
             self.update_folder(folder)
         return folder
 
     def add_image_urls(self, folder_name, new_image_urls, user_id):
         folder = self.get_folder_by_name(folder_name, user_id)
         if folder:
-            folder.image_urls.extend(new_image_urls)
+            folder.image_urls = list(set(new_image_urls) | set(folder.image_urls))
             self.update_folder(folder)
         return folder
 
     def add_download_urls(self, folder_name, new_download_urls, user_id):
         folder = self.get_folder_by_name(folder_name, user_id)
         if folder:
-            folder.download_urls.extend(new_download_urls)
+            folder.download_urls = list(set(new_download_urls) | set(folder.download_urls))
             self.update_folder(folder)
         return folder
 
     def delete_web_urls(self, folder_name, web_url, user_id):
         folder = self.get_folder_by_name(folder_name, user_id)
         if folder:
-            folder.web_urls.remove(web_url)
-            self.update_folder(folder)
+            if web_url in folder.web_urls:
+                folder.web_urls.remove(web_url)
+                self.update_folder(folder)
         return folder
 
     def delete_image_urls(self, folder_name, image_url, user_id):
         folder = self.get_folder_by_name(folder_name, user_id)
         if folder:
-            folder.image_urls.remove(image_url)
-            self.update_folder(folder)
+            if image_url in folder.image_urls:
+                folder.image_urls.remove(image_url)
+                self.update_folder(folder)
         return folder
 
     def delete_download_urls(self, folder_name, download_url, user_id):
         folder = self.get_folder_by_name(folder_name, user_id)
         if folder:
-            folder.download_urls.remove(download_url)
-            self.update_folder(folder)
+            if download_url in folder.download_urls:
+                folder.download_urls.remove(download_url)
+                self.update_folder(folder)
         return folder
 
     def update_folder(self, folder):
-        self.collection.update_one({"_id": ObjectId(folder.id)}, {"$set": folder.to_dict()})
+        self.collection.update_one({"id": folder.id}, {"$set": folder.to_dict()})
