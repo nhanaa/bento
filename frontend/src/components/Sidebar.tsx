@@ -45,6 +45,7 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-col py-5">
+            <FolderMenuItem name="Home" emoji="🏠" _id="home" noMenu={true} />
             <div className="group flex flex-row justify-between items-center rounded-xl px-1 transition-colors hover:bg-gray-100">
               <p className="font-semibold text-sm text-gray-400">Folders</p>
               <AddFolderCard

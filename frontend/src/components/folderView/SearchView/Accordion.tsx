@@ -6,12 +6,14 @@ import { motion } from "framer-motion";
 interface AccordionProps {
   emoji: string;
   name: string;
-  content: { type: "link" | "screenshot" | "file"; content: any }[]; // Define content as an array of items
+  type: string;
+  content: any[]; // Define content as an array of items
 }
 
 export const Accordion: React.FC<AccordionProps> = ({
   emoji,
   name,
+  type
   content,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,8 +53,8 @@ export const Accordion: React.FC<AccordionProps> = ({
             {content.map((item, index) => (
               <AccordionItem
                 key={index}
-                type={item.type}
-                content={item.content}
+                type={type}
+                content={item}
               />
             ))}
           </div>

@@ -1,0 +1,23 @@
+.bn-editor [data-content-type="heading"] {
+    color: #4B5563;
+}
+
+.bn-editor [data-content-type="paragraph"] {
+    color: #6B7280;
+}
+
+.bn-editor [data-content-type="bulletListItem"] {
+    color: #6B7280;
+}
+
+.bn-drag-handle-menu .bn-suggestion-menu {
+    outline: none;
+    background-color: transparent;
+    padding: 0;
+}
+
+.bn-drag-handle-menu:hover .bn-suggestion-menu:hover{
+    color: #4B5563;
+    outline: none;
+        background-color: transparent;
+}

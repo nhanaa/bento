@@ -3,11 +3,11 @@ import { Accordion } from "./Accordion";
 import { Searchbar } from "./Searchbar";
 import { Separator } from "@/components/ui/separator";
 
-export const SearchView: React.FC = ({
-  web_urls,
-  image_urls,
-  download_urls,
-}) => {
+export const SearchView: React.FC<{
+  web_urls: string[];
+  image_urls: string[];
+  download_urls: string[];
+}> = ({ web_urls, image_urls, download_urls }) => {
   return (
     <div className="w-1/3 h-full rounded-xl bg-gray-50 border border-gray-200 p-4 overflow-y-scroll">
       <Searchbar />

@@ -55,7 +55,11 @@ const FolderView: React.FC = () => {
         <Header emoji={folder.emoji} name={folder.name} />
         <div className="flex w-full h-5/6 flex-wrap justify-between">
           <SummaryView description={folder.summary} />
-          {/* <SearchView items={folder.items} /> */}
+          {/* <SearchView
+            web_urls={folder.web_url}
+            download_urls={folder.download_urls}
+            image_urls={folder.image_urls}
+          /> */}
         </div>
       </div>
     </Layout>

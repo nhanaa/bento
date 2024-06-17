@@ -41,3 +41,11 @@ export interface AddFolderData {
   name: string;
   summary: string;
 }
+
+export type ContentType = {
+  type: string;
+  props: {
+    level: number;
+  };
+  content: string;
+};

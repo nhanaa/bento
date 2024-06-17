@@ -16,7 +16,7 @@ interface FileContent {
 
 interface AccordionItemProps {
   type: "link" | "screenshot" | "file";
-  content: LinkContent | FileContent;
+  content: any;
 }
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({
