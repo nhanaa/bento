@@ -79,7 +79,6 @@ def add_folder_image_urls(folder_id):
         return jsonify({"error": "Folder not found"}), 404
     return jsonify(folder)
 
-
 @folder_bp.route('/<folder_id>/image_urls', methods=['DELETE'])
 def delete_folder_image_urls(folder_id):
     folder = folder_service.delete_image_urls(folder_id)
