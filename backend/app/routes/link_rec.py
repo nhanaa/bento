@@ -6,7 +6,7 @@ from typing import List
 from ..models.rag_model import LinkRecInput, LinkList, VisitDataList
 
 from flask import Blueprint, jsonify, request
-from ..services.link_rec import LinkRec
+from ..services.ai_services.link_rec import LinkRec
 
 link_rec_bp = Blueprint("link_rec_bp", __name__)
 link_rec_service = LinkRec()

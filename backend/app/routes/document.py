@@ -9,7 +9,7 @@ from asyncio import gather
 
 from flask import Blueprint, jsonify, request
 
-from ..services.document import Document
+from ..services.ai_services.document import Document
 
 document_bp = Blueprint("document_bp", __name__)
 document_service = Document()

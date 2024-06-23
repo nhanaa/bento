@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, Body, HTTPException
-from ..services.chat import query_agent
+from ..services.ai_services.chat import query_agent
 from ..models.rag_model import ChatInput, ChatOutput
 
 from flask import Blueprint, jsonify, request
