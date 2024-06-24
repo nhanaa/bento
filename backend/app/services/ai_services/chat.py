@@ -8,7 +8,7 @@ async def query_agent(user_id: str, folder_id: str, query: str):
     """
     agent_with_chat_history = create_agent(user_id, folder_id)
     query_response = agent_with_chat_history.invoke(
-        {"input": query, "folder_topic": "machine learning/AI/NLP"},
+        {"input": query, "folder_topic": "japan"},
         config={"configurable": {"user_id": user_id, "folder_id": folder_id}},
     )
     return query_response

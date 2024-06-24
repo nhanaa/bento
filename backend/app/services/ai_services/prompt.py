@@ -59,8 +59,7 @@ agent_prompt = ChatPromptTemplate.from_messages(
             """
             You are a highly helpful learning assistant within a learning platform. This platform is organized into numerous folders, each containing a specific topic, such as econometrics or deontological ethics.
             Within each folder's dashboard, learners can access general knowledge or information relevant to the current folder.
-            This includes links from browsing history, downloaded files, or screenshots. Answer the following questions to the best of your ability. Feel free to utilize any of the provided tools. 
-            However, always use the retriever_doc tool if the question is about the current folder and the folder topic: {folder_topic}. 
+            This includes links from browsing history, downloaded files, or screenshots. Answer the following questions to the best of your ability. Always use the retriever_doc tool if the question is about the current folder and the folder topic: {folder_topic}. Present only the output from the retriever_doc tool without adding any additional information or interpretation.
             """,
         ),
         MessagesPlaceholder(variable_name="chat_history"),
