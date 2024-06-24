@@ -13,11 +13,10 @@ interface AccordionProps {
 export const Accordion: React.FC<AccordionProps> = ({
   emoji,
   name,
-  type
+  type,
   content,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-
   function handleClick() {
     setIsOpen(!isOpen);
   }
@@ -34,7 +33,9 @@ export const Accordion: React.FC<AccordionProps> = ({
             <span>{name}</span>
           </div>
           <div className="items-center flex flex-row gap-2 ">
-            <span className="text-xs text-gray-500">{content.length}</span>
+            <span className="text-xs text-gray-500">
+              {content ? content.length : 0}
+            </span>
             {isOpen ? (
               <ChevronUp className="w-4 h-4" />
             ) : (
@@ -48,14 +49,10 @@ export const Accordion: React.FC<AccordionProps> = ({
         animate={{ height: isOpen ? "auto" : 0 }}
         style={{ overflow: "hidden" }}
       >
-        {isOpen && (
+        {isOpen && content && (
           <div className="flex flex-wrap gap-1 p-2">
             {content.map((item, index) => (
-              <AccordionItem
-                key={index}
-                type={type}
-                content={item}
-              />
+              <AccordionItem key={index} type={type} content={item} />
             ))}
           </div>
         )}

@@ -9,15 +9,15 @@ interface LinkContent {
 }
 
 interface FileContent {
-  name: string;
+  name?: string;
   icon?: React.ReactNode;
   summary?: string;
   previewImg?: string;
 }
 
 interface AccordionItemProps {
-  type: "link" | "screenshot" | "file";
-  content: any;
+  type?: string;
+  content?: any;
 }
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({
