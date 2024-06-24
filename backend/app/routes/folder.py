@@ -135,10 +135,10 @@ in req body: {"query": folder description given by the user}
 """
 
 
-@folder_bp.route("/get_summary/<folder_id>", methods=["POST"])
-def get_folder_summary(folder_id):
+@folder_bp.route("/get_summary/<user_id>/<folder_id>", methods=["POST"])
+def get_folder_summary(user_id, folder_id):
     data = request.json
-    list_of_summaries = folder_service.get_summary(folder_id)
+    list_of_summaries = folder_service.get_summary(user_id, folder_id)
     print(f"length of documents: {len(list_of_summaries)}")
     llm_chain = folder_prompt | llm | StrOutputParser()
     res = llm_chain.invoke({"summaries": list_of_summaries, "theme": data["query"]})

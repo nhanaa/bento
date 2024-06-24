@@ -1,10 +1,4 @@
-from fastapi import APIRouter
-from fastapi import FastAPI, HTTPException, Body
-from typing import Any, List
-from pydantic import BaseModel, HttpUrl, Field
-from asyncio import gather
 from flask import Blueprint, jsonify, request
-from models.rag_model import LinkList
 from services.ai_services.document import Document
 
 document_bp = Blueprint("document_bp", __name__)
