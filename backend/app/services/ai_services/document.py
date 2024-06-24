@@ -35,7 +35,9 @@ class Document:
         res = await summarize_pdf(url)
         print(f"Received summary data: {res}")
         summary = res.get("summary", "")
+
         # checking that documnet follows the wanted format
+        res["folder_id"] = folder_id
         doc = DocumentModel(**res).model_dump()
         document_id = await self.insert_document_to_db(doc)
         print(f"Document inserted with ID: {document_id}")
