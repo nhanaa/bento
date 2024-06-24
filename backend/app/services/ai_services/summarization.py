@@ -86,7 +86,7 @@ async def summarize_pdf(url: str) -> dict:
     print(f"Selected indices for summarization: {selected_indices}")
 
     map_prompt = """
-    You will be given a single passage of a book/research paper/web content. In another word, long text will be chunked into smaller parts and you will be given a single chunk of text. 
+    You will be given a single passage of a book/research paper/web content. In another word, long text will be chunked into smaller parts and you will be given a single chunk of text.
     This section will be enclosed in triple backticks (```)
     Your goal is to give a summary of this section so that a reader will have a full understanding of what happened.
     Your response should be at least three paragraphs and fully encompass what was said in the passage.
@@ -139,7 +139,7 @@ async def summarize_pdf(url: str) -> dict:
 
     The summary is provided below enclosed in triple backticks for clarity:
     Summaries to analyze:
-    ```{summaries}``` 
+    ```{summaries}```
 
     Please respond only with the final output formatted as a JSON instance that conforms to the JSON schema provided below. Do not include any additional explanations or interpretations about how you identified the medium or generated the summary. The JSON output should be the only content in your response.
 

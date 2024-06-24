@@ -18,8 +18,8 @@ from langchain_community.chat_message_histories.cosmos_db import (
 from langchain_openai import AzureChatOpenAI
 
 # import from local modules
-from rag import custom_create_retrieval_chain
-from prompt import agent_prompt
+from .rag import custom_create_retrieval_chain
+from .prompt import agent_prompt
 from utils.ai_tools import llm
 
 # Load environment variables

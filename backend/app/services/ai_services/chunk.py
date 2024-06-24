@@ -4,7 +4,7 @@ from pymongo.errors import DuplicateKeyError
 
 
 from app import db
-from vectorstore_manager import VectorStoreManager
+from .vectorstore_manager import VectorStoreManager
 
 """
 For ONE given website url, document id, and document summary, create and add chunks to vector db

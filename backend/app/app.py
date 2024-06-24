@@ -22,10 +22,6 @@ def create_app():
     from routes.link_rec import link_rec_bp
     from routes.document import document_bp
     from routes.chat import chat_bp
-
-    # TODO: we have different imports stmts
-    from routes.user import user_bp
-    from routes.folder import folder_bp
     from routes.browsing_history import browsing_history_bp
     from routes.downloads import downloads_bp
 

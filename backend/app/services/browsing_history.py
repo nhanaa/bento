@@ -1,5 +1,5 @@
-from ..app import db
-from ..utils.utils import jsonify_document
+from app import db
+from utils.utils import jsonify_document
 from bson import ObjectId
 
 class BrowsingHistoryService:
