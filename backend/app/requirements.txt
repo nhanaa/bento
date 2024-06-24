@@ -1,6 +1,6 @@
 azure-core
 azure-cosmos
-flask==3.0.3
+flask[async]==3.0.3
 pymongo==4.7.2
 python-dotenv==1.0.1
 google-auth-oauthlib
@@ -15,6 +15,7 @@ whoosh
 langchain_core
 langchain_openai
 langchain_community
+langchain_huggingface
 sentence-transformers
 fastapi
 motor
