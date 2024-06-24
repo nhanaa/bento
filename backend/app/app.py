@@ -24,6 +24,7 @@ def create_app():
     from routes.downloads import downloads_bp
     from routes.search import search_bp
     from routes.oauth import oauth_bp
+    from routes.scraper import scraper_bp
 
     # Register blueprints
     app.register_blueprint(user_bp, url_prefix='/users')
@@ -32,6 +33,7 @@ def create_app():
     app.register_blueprint(downloads_bp, url_prefix='/downloads')
     app.register_blueprint(search_bp, url_prefix='/search')
     app.register_blueprint(oauth_bp, url_prefix='/oauth')
+    app.register_blueprint(scraper_bp, url_prefix="/scrape")
 
     return app
 

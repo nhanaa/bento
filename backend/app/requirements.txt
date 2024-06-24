@@ -8,6 +8,7 @@ google-auth-httplib2
 google-api-python-client
 requests_oauthlib
 Flask-Session
+beautifulsoup4
 pyjwt
 flask-cors
 whoosh
