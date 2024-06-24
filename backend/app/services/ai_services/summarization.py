@@ -18,7 +18,7 @@ import json
 from langchain_community.document_loaders import WebBaseLoader
 from pymongo import MongoClient
 import certifi
-from ...utils.ai_tools import llm, huggingface_embeddings
+from utils.ai_tools import llm, huggingface_embeddings
 
 
 async def summarize_pdf(url: str) -> dict:

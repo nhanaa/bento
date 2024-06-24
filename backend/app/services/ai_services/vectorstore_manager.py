@@ -1,7 +1,7 @@
 from pymongo.errors import DuplicateKeyError
-from .custom_vectorstore import CustomAzureCosmosDBVectorSearch
-from ...app import db
-from ...utils.ai_tools import huggingface_embeddings
+from custom_vectorstore import CustomAzureCosmosDBVectorSearch
+from app import db
+from utils.ai_tools import huggingface_embeddings
 
 
 class VectorStoreManager:

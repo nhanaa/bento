@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from pymongo import MongoClient
-from .config import Config
+from config import Config
 import certifi
 
 app = Flask(__name__)
@@ -17,17 +17,17 @@ db = mongo[app.config["MONGO_DB_NAME"]]
 
 
 def create_app():
-    from .routes.user import user_bp
-    from .routes.folder import folder_bp
-    from .routes.link_rec import link_rec_bp
-    from .routes.document import document_bp
-    from .routes.chat import chat_bp
+    from routes.user import user_bp
+    from routes.folder import folder_bp
+    from routes.link_rec import link_rec_bp
+    from routes.document import document_bp
+    from routes.chat import chat_bp
 
     # TODO: we have different imports stmts
-    from .routes.user import user_bp
-    from .routes.folder import folder_bp
-    from .routes.browsing_history import browsing_history_bp
-    from .routes.downloads import downloads_bp
+    from routes.user import user_bp
+    from routes.folder import folder_bp
+    from routes.browsing_history import browsing_history_bp
+    from routes.downloads import downloads_bp
 
     # Register blueprints
     app.register_blueprint(user_bp, url_prefix="/users")

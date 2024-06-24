@@ -3,10 +3,10 @@ from pydantic import BaseModel
 from typing import List
 
 # from ..services.link_recommendation import get_links, insert_browsing_history
-from ..models.rag_model import LinkRecInput, LinkList, VisitDataList
+from models.rag_model import LinkRecInput, LinkList, VisitDataList
 
 from flask import Blueprint, jsonify, request
-from ..services.ai_services.link_rec import LinkRec
+from services.ai_services.link_rec import LinkRec
 
 link_rec_bp = Blueprint("link_rec_bp", __name__)
 link_rec_service = LinkRec()

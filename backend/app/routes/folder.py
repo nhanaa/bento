@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
 from langchain_core.output_parsers import StrOutputParser
-from ..services.folder import FolderService
-from ..services.ai_services.prompt import folder_prompt
-from ..utils.ai_tools import llm
+from services.folder import FolderService
+from services.ai_services.prompt import folder_prompt
+from utils.ai_tools import llm
 
 
 folder_bp = Blueprint("folders", __name__)

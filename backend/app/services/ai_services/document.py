@@ -3,11 +3,11 @@ import certifi
 import os
 from pydantic import BaseModel, HttpUrl, Field
 from datetime import datetime
-from .summarization import summarize_pdf
-from .chunk import Chunk
-from ...models.rag_model import DocumentModel
+from summarization import summarize_pdf
+from chunk import Chunk
+from models.rag_model import DocumentModel
 from motor.motor_asyncio import AsyncIOMotorClient
-from ...app import db
+from app import db
 from asyncio import gather
 
 

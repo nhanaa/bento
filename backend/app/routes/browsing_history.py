@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..services.browsing_history import BrowsingHistoryService
+from services.browsing_history import BrowsingHistoryService
 
 browsing_history_bp = Blueprint("browsing_history", __name__)
 browsing_history_service = BrowsingHistoryService()

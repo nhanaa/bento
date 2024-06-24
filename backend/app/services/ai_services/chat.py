@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel
 
-from .agent import create_agent
+from agent import create_agent
 
 
 async def query_agent(user_id: str, folder_id: str, query: str):

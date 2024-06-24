@@ -8,10 +8,10 @@ from langchain_openai import AzureChatOpenAI
 from dotenv import load_dotenv
 
 # import from local module
-from .prompt import retrieval_prompt, document_prompt
-from ...utils.ai_tools import llm
-from .vectorstore_manager import VectorStoreManager
-from ...app import db
+from prompt import retrieval_prompt, document_prompt
+from utils.ai_tools import llm
+from vectorstore_manager import VectorStoreManager
+from app import db
 
 load_dotenv()
 

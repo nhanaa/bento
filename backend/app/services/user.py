@@ -1,6 +1,6 @@
-from ..models.user import User
-from ..app import db
-from ..utils.utils import jsonify_document
+from models.user import User
+from app import db
+from utils.utils import jsonify_document
 from bson import ObjectId
 
 

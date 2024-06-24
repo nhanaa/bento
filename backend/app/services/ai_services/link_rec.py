@@ -19,8 +19,8 @@ from pymongo.errors import DuplicateKeyError
 import certifi
 
 
-from ...app import db
-from ...utils.ai_tools import huggingface_embeddings
+from app import db
+from utils.ai_tools import huggingface_embeddings
 
 
 # # Load environment variables from a .env file

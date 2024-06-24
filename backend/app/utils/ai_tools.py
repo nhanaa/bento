@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 import certifi
-from ..services.ai_services.custom_vectorstore import CustomAzureCosmosDBVectorSearch
+from services.ai_services.custom_vectorstore import CustomAzureCosmosDBVectorSearch
 
 load_dotenv()
 

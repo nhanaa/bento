@@ -7,7 +7,7 @@ import sys
 
 print(sys.path)
 # from backend.app.services.summarization import summarize_pdf
-from ..services.summarization import summarize_pdf
+from services.summarization import summarize_pdf
 
 router = APIRouter()
 

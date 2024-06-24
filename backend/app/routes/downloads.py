@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..services.downloads import DownloadsService
+from services.downloads import DownloadsService
 
 downloads_bp = Blueprint('downloads_bp', __name__)
 downloads_service = DownloadsService()
