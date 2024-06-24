@@ -24,6 +24,7 @@ class DocumentModel(BaseModel):
         description="The date and time the document was created",
     )
     folder_id: str
+    user_id: str
 
 
 class VisitData(BaseModel):
