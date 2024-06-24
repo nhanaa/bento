@@ -1,14 +1,22 @@
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { useState } from "react";
 
-export const EmojiSelector = () => {
+interface EmojiSelectorProps {
+  onEmojiSelect: (emoji: string) => void;
+}
+
+export const EmojiSelector: React.FC<EmojiSelectorProps> = ({
+  onEmojiSelect,
+}) => {
   const [emoji, setEmoji] = useState("😊");
   const [isPickerVisible, setPickerVisible] = useState(false);
 
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     setEmoji(emojiData.emoji);
     setPickerVisible(false);
+    onEmojiSelect(emoji); 
   };
+  
   return (
     <>
       <div

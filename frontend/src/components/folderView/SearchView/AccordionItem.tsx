@@ -3,20 +3,21 @@ import { File, Image } from "lucide-react";
 
 interface LinkContent {
   name: string;
+  link: string;
   favicon?: string;
   summary?: string;
 }
 
 interface FileContent {
-  name: string;
+  name?: string;
   icon?: React.ReactNode;
   summary?: string;
   previewImg?: string;
 }
 
 interface AccordionItemProps {
-  type: "link" | "screenshot" | "file";
-  content: LinkContent | FileContent;
+  type?: string;
+  content?: any;
 }
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({
@@ -25,7 +26,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
 }) => {
   if (type === "link") {
     const linkContent = content as LinkContent;
-    return <LinkItem name={linkContent.name} favicon={linkContent.favicon} />;
+    return <LinkItem link={linkContent.link} name={linkContent.name} favicon={linkContent.favicon} />;
   } else if (type === "screenshot") {
     const fileContent = content as FileContent;
     return <FileItem name={fileContent.name} icon={<Image className="w-4 h-4" />} />;
@@ -36,15 +37,17 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
 };
 
 
-const LinkItem: React.FC<LinkContent> = ({ name, favicon }) => {
+const LinkItem: React.FC<LinkContent> = ({ link, name, favicon }) => {
   return (
-    <div className="w-full hover:bg-customViolet-200 transition-colors text-sm font-medium text-gray-500 items-center flex flex-row p-3 border border-gray-200 bg-customViolet-100 gap-2 rounded-xl truncate">
-      {favicon && <img className="w-4 h-4" src={favicon} />}
+    <a
+      href={link}
+      className="w-full hover:bg-customViolet-200 transition-colors text-sm font-medium text-gray-500 items-center flex flex-row p-3 border border-gray-200 bg-customViolet-100 gap-2 rounded-xl truncate"
+    >
+      {favicon && <img className="w-4 h-4" src={favicon} alt="favicon" />}
       {name}
-    </div>
+    </a>
   );
 };
-
 
 const FileItem: React.FC<FileContent> = ({
   name,
