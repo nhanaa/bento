@@ -29,7 +29,7 @@ from utils.ai_tools import huggingface_embeddings
 
 class LinkRec:
     def __init__(self):
-        COLLECTION_NAME = "browsing_history_test"
+        COLLECTION_NAME = "browsing_history"
         self.collection = db[COLLECTION_NAME]
 
         # Initialize the vector store
@@ -44,23 +44,21 @@ class LinkRec:
         if not self.vectorstore.index_exists():
             self.vectorstore.create_index(dimensions=768)
 
-    def get_links(self, user_id: str, desc: str) -> Dict[str, List[str]]:
+    def get_links(self, ip: str, desc: str) -> Dict[str, List[str]]:
         similar_documents = self.vectorstore.similarity_search(
             desc, score_threshold=0.35, k=6
         )
         # Return the search results
         return {"links_list": [doc.page_content for doc in similar_documents]}
 
-    def insert_browsing_history(self, data):
+    def embed_browsing_history(self, data):
         """
         Inserts the browsing history data into the Azure Cosmos DB.
         """
-        # Insert the data into the collection
         for item in data:
-            # my_dict = item.model_dump()
-            my_dict = item
-            url_in_str = str(my_dict["url"])
-            my_str = my_dict["title"] + " " + url_in_str
-            my_dict["url"] = url_in_str
-            my_dict["website_vector_field"] = huggingface_embeddings.embed_query(my_str)
-            self.collection.insert_one(my_dict)
+            url_in_str = str(item["url"])
+            my_str = item["title"] + " " + url_in_str
+            item["url"] = url_in_str
+            item["website_vector_field"] = huggingface_embeddings.embed_query(my_str)
+
+        return data

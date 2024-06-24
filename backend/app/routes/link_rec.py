@@ -16,22 +16,8 @@ takes in {"query" : str}
 outputs {links_list: List[HttpUrl]}
 """
 
-
-@link_rec_bp.route("/<user_id>", methods=["POST"])
-def rec_links(user_id: str) -> LinkList:
+@link_rec_bp.route("/<ip>", methods=["POST"])
+def rec_links(ip: str) -> LinkList:
     data = request.get_json()
-    res = link_rec_service.get_links(user_id, data["query"])
+    res = link_rec_service.get_links(ip, data["query"])
     return jsonify(res), 201
-
-
-"""
-takes in {"my_list" : [visitdatas]}
-outputs nothing
-"""
-
-
-@link_rec_bp.route("/insert_browsing_history", methods=["POST"])
-def insert_history():
-    data = request.get_json()
-    link_rec_service.insert_browsing_history(data=data["my_list"])
-    return jsonify({"message": "inserted successfully"})
