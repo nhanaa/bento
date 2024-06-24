@@ -20,12 +20,16 @@ db = mongo[app.config['MONGO_DB_NAME']]
 def create_app():
     from routes.user import user_bp
     from routes.folder import folder_bp
+    from routes.browsing_history import browsing_history_bp
+    from routes.downloads import downloads_bp
     from routes.search import search_bp
     from routes.oauth import oauth_bp
 
     # Register blueprints
     app.register_blueprint(user_bp, url_prefix='/users')
     app.register_blueprint(folder_bp, url_prefix='/folders')
+    app.register_blueprint(browsing_history_bp, url_prefix='/browsing_history')
+    app.register_blueprint(downloads_bp, url_prefix='/downloads')
     app.register_blueprint(search_bp, url_prefix='/search')
     app.register_blueprint(oauth_bp, url_prefix='/oauth')
 

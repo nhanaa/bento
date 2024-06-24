@@ -11,19 +11,19 @@ def add_folder():
     folder = folder_service.create_folder(data['user_id'], data['name'], data['summary'])
     return jsonify(folder), 201
 
-@folder_bp.route('/all/<user_id>', methods=['GET'])
-def get_folders_by_user_id(user_id):
-    folders = folder_service.get_folders_by_user_id(user_id)
-    if not folders:
-        return jsonify({"error": "Folders not found"}), 404
-    return jsonify(folders)
-
 @folder_bp.route('/<folder_id>/', methods=['GET'])
 def get_folder(folder_id):
     folder = folder_service.get_folder_by_id(folder_id)
     if not folder:
         return jsonify({"error": "Folder not found"}), 404
     return jsonify(folder)
+
+@folder_bp.route('/all/<user_id>', methods=['GET'])
+def get_folders_by_user_id(user_id):
+    folders = folder_service.get_folders_by_user_id(user_id)
+    if not folders:
+        return jsonify({"error": "Folders not found"}), 404
+    return jsonify(folders)
 
 @folder_bp.route('/<folder_id>/', methods=['PUT'])
 def update_folder(folder_id):
@@ -78,7 +78,6 @@ def add_folder_image_urls(folder_id):
     if not folder:
         return jsonify({"error": "Folder not found"}), 404
     return jsonify(folder)
-
 
 @folder_bp.route('/<folder_id>/image_urls', methods=['DELETE'])
 def delete_folder_image_urls(folder_id):
