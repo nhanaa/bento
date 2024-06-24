@@ -1,7 +1,9 @@
 import requests
 from fastapi import FastAPI
-from app.routes import document, link_recommendation, summary, chat
+from app.routes import document, summary, chat
 from fastapi.middleware.cors import CORSMiddleware
+
+from backend.app.routes import link_rec
 
 app = FastAPI()
 
@@ -15,6 +17,6 @@ app.add_middleware(
 )
 
 app.include_router(document.router)
-app.include_router(link_recommendation.router)
+app.include_router(link_rec.router)
 app.include_router(summary.router)
 app.include_router(chat.router)
