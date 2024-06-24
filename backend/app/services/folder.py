@@ -116,3 +116,10 @@ class FolderService:
         folder["download_urls"] = []
         self.collection.update_one({"_id": ObjectId(folder_id)}, {"$set": folder})
         return jsonify_document(folder)
+
+    def get_summary(self, folder_id):
+        document_collection = db["documents"]
+        documents = document_collection.find({"folder_id": folder_id})
+        # Collect all summaries
+        summaries = [doc["summary"] for doc in documents]
+        return summaries
