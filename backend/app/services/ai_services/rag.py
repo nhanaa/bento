@@ -1,22 +1,16 @@
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
-import os
-from langchain.agents import tool
-from pymongo import MongoClient
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_openai import AzureChatOpenAI
 from dotenv import load_dotenv
+import logging
+from typing import Optional
 
 # import from local module
 from .prompt import retrieval_prompt, document_prompt
 from utils.ai_tools import llm
-from .vectorstore_manager import VectorStoreManager
+from .vectorstore_manager import VectorStoreWithFilter
 from app import db
 
 load_dotenv()
-
-import logging
-from typing import Optional
 
 
 def custom_create_retrieval_chain(
@@ -37,11 +31,18 @@ def custom_create_retrieval_chain(
     logger = logging.getLogger(__name__)
 
     try:
-        CHUNK_COLLECTION_NAME = "chunks"
+        collection_name = "chunks"
         embedding_key = "vectorContent"
-        chunk_collection = db[CHUNK_COLLECTION_NAME]
-        vector_manager = VectorStoreManager(chunk_collection, embedding_key)
-        retriever = vector_manager.get_retriever(user_id, folder_id)
+        filter_index_defs = [
+            {"key": {"user_id": 1}, "name": "user_filter"},
+            {"key": {"folder_id": 1}, "name": "folder_filter"},
+        ]
+        vector_manager = VectorStoreWithFilter(
+            collection_name, embedding_key, filter_index_defs=filter_index_defs
+        )
+        retriever = vector_manager.get_retriever(
+            filter_dict={"user_id": user_id, "folder_id": folder_id}
+        )
 
         logger.info("Initialized document retriever")
 

@@ -1,12 +1,7 @@
 import os
 import logging
 from dotenv import load_dotenv
-from pymongo import MongoClient
-from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
 from langchain.agents import tool, AgentExecutor, create_openai_functions_agent
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.runnables.history import (
     RunnableWithMessageHistory,
@@ -15,14 +10,12 @@ from langchain_core.runnables.history import (
 from langchain_community.chat_message_histories.cosmos_db import (
     CosmosDBChatMessageHistory,
 )
-from langchain_openai import AzureChatOpenAI
 
 # import from local modules
 from .rag import custom_create_retrieval_chain
 from .prompt import agent_prompt
 from utils.ai_tools import llm
 
-# Load environment variables
 load_dotenv()
 
 # Set up logging
@@ -33,7 +26,9 @@ logger = logging.getLogger(__name__)
 def create_agent(user_id, folder_id):
     retrieval_chain = custom_create_retrieval_chain(user_id, folder_id)
 
-    # Define tools
+    # Define tools. This agent will have two tools 
+    # 1. to RAG into Document collection
+    # 2. to search the Web 
     @tool  # RAG
     def retriever_doc(query: str) -> str:
         """
@@ -51,7 +46,6 @@ def create_agent(user_id, folder_id):
     search = TavilySearchResults()
     tools = [retriever_doc, search]
 
-    logger.info("Initialized AzureChatOpenAI")
 
     # Create agent and executor
     agent = create_openai_functions_agent(llm, tools, prompt=agent_prompt)
@@ -111,5 +105,4 @@ def create_agent(user_id, folder_id):
             ),
         ],
     )
-    logger.info("Agent with chat history is set up and ready to use")
     return agent_with_chat_history

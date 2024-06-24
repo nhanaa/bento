@@ -21,7 +21,7 @@ import certifi
 from utils.ai_tools import llm, huggingface_embeddings
 
 
-async def summarize_pdf(url: str) -> dict:
+async def summarize_website(url: str) -> dict:
     print("************************************")
     print("Loading the language model...")
     print("************************************")
