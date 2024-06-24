@@ -13,6 +13,8 @@ class CosmosDB:
         cls.database = cls.client.create_database_if_not_exists(id=config.COSMOS_DB_DATABASE_NAME)
         cls.create_containers()
 
+        return (cls, app)
+
     @classmethod
     def create_collection(cls):
         cls.containers['Users'] = cls.database.create_container_if_not_exists(

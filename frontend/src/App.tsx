@@ -4,13 +4,28 @@ import Homepage from "./pages/Homepage";
 import FolderView from "./pages/FolderView";
 import { Auth } from "./pages/Auth";
 import { Landing } from "./pages/Landing";
+import PrivateRoute from "./components/PrivateRoute";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/home" element={<Homepage />} />
-        <Route path="/folder" element={<FolderView />} />
+        <Route
+          path="/home"
+          element={
+            <PrivateRoute>
+              <Homepage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/folder/:folderId"
+          element={
+            <PrivateRoute>
+              <FolderView />
+            </PrivateRoute>
+          }
+        />
         <Route path="/auth" element={<Auth />} />
         <Route path="/" element={<Landing />} />
       </Routes>

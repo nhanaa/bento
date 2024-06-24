@@ -1,5 +1,13 @@
-flask
 azure-core
 azure-cosmos
-python-dotenv
-pymongo
+flask==3.0.3
+pymongo==4.7.2
+python-dotenv==1.0.1
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+requests_oauthlib
+Flask-Session
+pyjwt
+flask-cors
+whoosh
