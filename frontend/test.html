@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Submit Document Information</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <h1>Create Document</h1>
+    <input type="text" id="folderName" placeholder="Folder Name" />
+    <input type="text" id="folderDesc" placeholder="Folder Description" />
+    <button onclick="docCreation()">Submit</button>
+    <p id="status"></p>
+    <h3>The following links are recommended:</h3>
+    <ul id="linksList"></ul>
+    <h1>Chat me</h1>
+    <input type="text" id="chatQuestion" placeholder="Text me xd" />
+    <button onclick="sendChat()">Send</button>
+    <p id="chatAnswer"></p>
+  </body>
+</html>

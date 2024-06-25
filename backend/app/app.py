@@ -2,6 +2,7 @@ import os
 from flask import Flask, Response, request, jsonify
 from pymongo import MongoClient
 from config import Config
+import certifi
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 
@@ -20,16 +21,22 @@ db = mongo[app.config['MONGO_DB_NAME']]
 def create_app():
     from routes.user import user_bp
     from routes.folder import folder_bp
+    from routes.link_rec import link_rec_bp
+    from routes.document import document_bp
+    from routes.chat import chat_bp
     from routes.browsing_history import browsing_history_bp
     from routes.downloads import downloads_bp
     from routes.search import search_bp
     from routes.oauth import oauth_bp
 
     # Register blueprints
-    app.register_blueprint(user_bp, url_prefix='/users')
-    app.register_blueprint(folder_bp, url_prefix='/folders')
-    app.register_blueprint(browsing_history_bp, url_prefix='/browsing_history')
-    app.register_blueprint(downloads_bp, url_prefix='/downloads')
+    app.register_blueprint(user_bp, url_prefix="/users")
+    app.register_blueprint(folder_bp, url_prefix="/folders")
+    app.register_blueprint(browsing_history_bp, url_prefix="/browsing_history")
+    app.register_blueprint(downloads_bp, url_prefix="/downloads")
+    app.register_blueprint(link_rec_bp, url_prefix="/links")
+    app.register_blueprint(document_bp, url_prefix="/documents")
+    app.register_blueprint(chat_bp, url_prefix="/chat")
     app.register_blueprint(search_bp, url_prefix='/search')
     app.register_blueprint(oauth_bp, url_prefix='/oauth')
 
@@ -44,6 +51,7 @@ def before_request():
     if request.method.lower() == 'options':
         return jsonify(headers), 200
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run(port=5000, debug=True)
