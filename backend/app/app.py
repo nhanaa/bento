@@ -33,7 +33,7 @@ def create_app():
     app.register_blueprint(downloads_bp, url_prefix='/downloads')
     app.register_blueprint(search_bp, url_prefix='/search')
     app.register_blueprint(oauth_bp, url_prefix='/oauth')
-    app.register_blueprint(scraper_bp, url_prefix="/scrape")
+    app.register_blueprint(scraper_bp, url_prefix="/scraper")
 
     return app
 
