@@ -1,8 +1,9 @@
 import React from "react";
 import { File, Image } from "lucide-react";
+import { getWebMetadata } from "@/hooks/useScraper";
 
 interface LinkContent {
-  name: string;
+  name?: string;
   link: string;
   favicon?: string;
   summary?: string;
@@ -25,19 +26,34 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   content,
 }) => {
   if (type === "link") {
-    const linkContent = content as LinkContent;
-    return <LinkItem link={linkContent.link} name={linkContent.name} favicon={linkContent.favicon} />;
+    const {
+      data: linkContent,
+      isLoading,
+      isError,
+      error,
+    } = getWebMetadata(content);
+    return (
+      <LinkItem
+        link={content}
+        name={linkContent?.title}
+        favicon={linkContent?.image}
+      />
+    );
   } else if (type === "screenshot") {
     const fileContent = content as FileContent;
-    return <FileItem name={fileContent.name} icon={<Image className="w-4 h-4" />} />;
+    return (
+      <FileItem name={fileContent.name} icon={<Image className="w-4 h-4" />} />
+    );
   } else {
     const fileContent = content as FileContent;
-    return <FileItem name={fileContent.name} icon={<File className="w-4 h-4" />} />;
+    return (
+      <FileItem name={fileContent.name} icon={<File className="w-4 h-4" />} />
+    );
   }
 };
 
-
 const LinkItem: React.FC<LinkContent> = ({ link, name, favicon }) => {
+  console.log("name", name);
   return (
     <a
       href={link}
@@ -49,10 +65,7 @@ const LinkItem: React.FC<LinkContent> = ({ link, name, favicon }) => {
   );
 };
 
-const FileItem: React.FC<FileContent> = ({
-  name,
-  icon,
-}) => {
+const FileItem: React.FC<FileContent> = ({ name, icon }) => {
   return (
     <div className="w-1/4 aspect-square hover:bg-customViolet-200 transition-colors text-sm font-medium justify-center text-center text-gray-500 items-center flex flex-col p-3 border border-gray-200 bg-customViolet-100 gap-2 rounded-xl">
       <span className="text-gray-400">{icon}</span>

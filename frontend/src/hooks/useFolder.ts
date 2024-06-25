@@ -36,6 +36,7 @@ const fetchFolderById = async (id: string): Promise<Folder> => {
   };
 };
 
+
 export const getFolder = (folderId: string) => {
   return useQuery(['folder', folderId], () => fetchFolderById(folderId), {
     enabled: !!folderId,
@@ -63,3 +64,4 @@ export const addFolder = (): UseMutationResult<Folder, Error, AddFolderData> => 
     },
   });
 };
+

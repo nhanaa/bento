@@ -31,7 +31,7 @@ export interface Folder {
   name: string;
   summary: string;
   user_id: string;
-  web_url: string[];
+  web_urls: string[];
   download_urls: string[];
   image_urls: string[];
 }
@@ -49,3 +49,10 @@ export type ContentType = {
   };
   content: string;
 };
+
+
+export type Metadata =  {
+  title: string;
+  description: string;
+  image: string;
+}

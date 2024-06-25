@@ -9,10 +9,9 @@ scraper_service = ScraperService()
 def default():
     return 'Hello, user!'
 
-@scraper_bp.route('/url/', methods=['GET'])
-def get_metadata():
-    data = request.json
-    metadata = scraper_service.get_metadata(data["url"])
+@scraper_bp.route('/url/<url>', methods=['GET'])
+def get_metadata(url):
+    metadata = scraper_service.get_metadata(url)
     
     return jsonify(metadata)
 

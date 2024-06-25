@@ -56,7 +56,7 @@ const FolderView: React.FC = () => {
         <div className="flex w-full h-5/6 flex-wrap justify-between">
           <SummaryView description={folder.summary} />
           <SearchView
-            web_urls={folder.web_url}
+            web_urls={folder.web_urls}
             download_urls={folder.download_urls}
             image_urls={folder.image_urls}
           />
